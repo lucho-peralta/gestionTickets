@@ -52,3 +52,23 @@ Esto hay que resolverlo agregando una declaración explícita y firme (probablem
 **backend/aDesarrollar.md y README.md**: placeholders sin contenido.
 
 Esto es la evaluación completa. Decime con qué documentos querés que empiece cuando me autorices a generar contenido nuevo.
+
+## Modelo de Datos — Análisis de Almacenamientos (DFD)
+
+El `12_diagrama_flujo_datos.md` actual define solo dos almacenamientos (D1: Usuarios, D2: Tickets). Cruzando esto contra los requerimientos funcionales y las User Stories, esas dos tablas no alcanzan para cubrir lo que el propio proyecto pide:
+
+- RF-006/RF-007 piden un historial de comentarios (autor, timestamp, contenido) — relación uno-a-muchos que no entra como campo de Tickets.
+- La postcondición de CU-06 dice explícitamente que el cambio de estado "se registra en su historial" — no alcanza con sobreescribir un campo `estado`, hace falta persistir cada transición.
+- El criterio CA-7.2 de la User Story 7 (`05_actores_casos_de_uso.md`) pide "registro histórico" de las reasignaciones — mismo problema que el punto anterior.
+- `06_api.md` ya da por hecho una tabla de Categorías (endpoint `/categorias`, campo `categoria_id`) que el DFD no refleja.
+- RF-003 permite adjuntar archivos (plural) a un ticket, otra relación uno-a-muchos sin definición de dónde vive.
+
+**Resolución propuesta (3 tablas, dentro del límite de simplicidad del proyecto):**
+
+1. **Usuarios**: `dni` (PK), `nombre_completo`, `email`, `rol`.
+2. **Tickets**: `id` (PK), `asunto`, `descripcion`, `categoria` (campo simple, sin tabla aparte), `adjuntos` (lista/JSON de archivos, sin tabla aparte), `estado`, `fecha_creacion`, `dni_cliente` (FK), `dni_agente_asignado` (FK, nullable).
+3. **Eventos_Ticket**: `id` (PK), `ticket_id` (FK), `tipo_evento` (`comentario` / `cambio_estado` / `reasignacion`), `dni_actor`, `contenido` (solo si es comentario), `valor_anterior`, `valor_nuevo` (solo si es cambio de estado o reasignación), `timestamp`.
+
+Esta tercera tabla unifica comentarios, historial de estado e historial de asignación en un solo registro de eventos, filtrable por tipo. Cubre los cuatro requisitos citados sin necesidad de una tabla separada para cada uno, y mantiene el modelo en 3 tablas en vez de 6 o 7.
+
+**Impacto en otros documentos:** de aplicarse este modelo, `06_api.md` debería reemplazar el endpoint `/categorias` (que asume tabla propia) por una lista fija documentada, y agregar un endpoint de consulta de eventos/historial (por ejemplo `GET /tickets/{id}/eventos`) que hoy no existe.
