@@ -1,16 +1,19 @@
-# Diagrama de transicion
-Muestra las transiciones válidas entre los 5 estados de un ticket definidos en Requerimientos (RF-
-005).
+##Diagrama de Actividades
 
+flowchart TD
+Start([Inicio]) --> A[Cliente completa el formulario del ticket]
+A       --> B[Sistema genera el ticket en estado Abierto]
+B       --> C[Agente revisa la cola de tickets]
+C       --> D[Agente toma o asigna el ticket]
+D       --> E[Agente cambia el estado a En Progreso]
+E       --> F{¿Necesita más\ninformación del cliente?}
+F       -- Sí --> G[Estado: Esperando al Cliente]
+G       --> H[Cliente agrega un comentario]
+H       --> E
+F -- No --> I[Agente resuelve el problema]
+I       --> J[Estado: Resuelto]
+J       --> K{¿Cliente confirma\nla solución?}
+K       -- No --> E
+K       -- Sí --> L[Agente cierra el ticket]
+L       --> End([Fin])
 
-stateDiagram-v2
-[*] --> Abierto: Cliente crea ticket
-Abierto --> EnProgreso: Agente toma el ticket
-EnProgreso --> EsperandoCliente: Agente pide información
-EsperandoCliente --> EnProgreso: Cliente responde
-EnProgreso --> Resuelto: Agente resuelve
-Resuelto --> Cerrado: Agente cierra
-Resuelto --> EnProgreso: Cliente indica que no está resuelto
-Cerrado --> [*]
-EnProgreso: En Progreso
-EsperandoCliente: Esperando al Cliente
