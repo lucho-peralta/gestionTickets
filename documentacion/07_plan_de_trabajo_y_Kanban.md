@@ -73,7 +73,7 @@ A continuación se deja el código Mermaid del estado general del trabajo. Para 
 
 ```mermaid
 kanban
-  Pendiente[Pendiente - Semana 3]
+  Pendiente[Pendiente]
     s3a[12 Diagrama de Flujo de Datos - Juan]
     s3c[14 Diagrama de Secuencias - Lucas]
     s3d[15 Diagrama de Transición de Estado - Juan]
@@ -81,7 +81,7 @@ kanban
     s3f[17 Modelado de Procesos de Negocio - Franco]
     s4c[20 Diseño de Datos ERD - Lucas]
     s4e[22 Sprints y Entregas Parciales - Lucas]
-  En_progreso[En progreso - Semana 2]
+  En_progreso[En progreso]
     s2b[08 Gantt - Lucas]
     s2c[09 PERT/CPM - Juan]
     s2d[10 Flujo control de versiones - Franco]
