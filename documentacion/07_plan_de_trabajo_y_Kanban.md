@@ -1,6 +1,5 @@
 # Plan de Trabajo — Sistema de Gestión de Tickets de Soporte
 
-**Responsable: Luciano**
 
 ## Semana 1 — Relevamiento y Documentación Inicial (Hecho)
 
@@ -33,6 +32,16 @@
 | `15_diagrama_transicion_estado.md` | Transición de Estado | Juan |
 | `16_diagrama_actividades.md` | Actividades | Lucas |
 | `17_modelado_procesos_negocio.md` | Modelado del Proceso de Negocio | Franco |
+
+## Semana 4 — Diseño de Interfaces, Datos y Arquitectura (En progreso)
+
+| Archivo | Tarea | Responsable |
+|---|---|---|
+| `18_diseño_arquitectura_general.md` | Diseño de la arquitectura general | Luciano |
+| `19_diseño_rest_api.md` | Diseño de la REST API | Juan |
+| `20_diseño_de_Datos_ERD.md` | Diseño de Datos (ERD) | Lucas |
+| `21_herramientas_frameworks_librerías.md` | Herramientas, frameworks y librerías | Luciano |
+| `22_sprints_entregas_parciales.md` | Planificar sprints o entregas parciales | Lucas |
 
 ## Semana 4 a 13 — Resto del proyecto (Pendiente)
 
@@ -70,11 +79,16 @@ kanban
     s3d[15 Diagrama de Transición de Estado - Juan]
     s3e[16 Diagrama de Actividades - Lucas]
     s3f[17 Modelado de Procesos de Negocio - Franco]
+    s4c[20 Diseño de Datos ERD - Lucas]
+    s4e[22 Sprints y Entregas Parciales - Lucas]
   En_progreso[En progreso - Semana 2]
     s2b[08 Gantt - Lucas]
     s2c[09 PERT/CPM - Juan]
     s2d[10 Flujo control de versiones - Franco]
     s2e[11 Metodología de trabajo - Franco]
+    s4a[18 Diseño de Arquitectura General - Luciano]
+    s4b[19 Diseño de REST API - Juan]
+    s4d[21 Herramientas Frameworks y Librerías - Luciano]
   En_revision[En revisión]
     s1a[01 Enunciado - Franco]
     s1b[02 Alcance del proyecto - Juan]
@@ -86,3 +100,4 @@ kanban
     s3b[13 Casos de Uso - Luciano]
   Finalizado[Finalizado]
 ```
+
