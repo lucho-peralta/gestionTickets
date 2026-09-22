@@ -1,6 +1,6 @@
 # Diseño de la Arquitectura General
 
-Alcance: bloques del sistema y comunicación entre ellos. No incluye endpoints ni formato de request/response (`06_api.md`), tablas ni relaciones (ERD), ni framework, ORM o motor de base de datos (punto 4).
+Alcance: bloques del sistema y comunicación entre ellos. 
 
 ## Diagrama de Arquitectura
 
