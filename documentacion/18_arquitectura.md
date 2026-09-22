@@ -66,7 +66,7 @@ Un manejador central captura las excepciones de aplicación y las traduce a la r
 6. Si las reglas se cumplen: el Servicio construye o actualiza la entidad de Dominio y llama al Repositorio para persistir.
 7. Controlador: recibe el resultado del Servicio, arma la respuesta HTTP.
 
-Este flujo aplica a los nueve requerimientos funcionales de `04_requerimientos.md`. Lo que varía entre uno y otro son los pasos 3 y 4: qué Servicio, qué entidad de Dominio y qué regla puntual.
+
 
 
 

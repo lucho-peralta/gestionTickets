@@ -86,9 +86,7 @@ kanban
     s2c[09 PERT/CPM - Juan]
     s2d[10 Flujo control de versiones - Franco]
     s2e[11 Metodología de trabajo - Franco]
-    s4a[18 Diseño de Arquitectura General - Luciano]
     s4b[19 Diseño de REST API - Juan]
-    s4d[21 Herramientas Frameworks y Librerías - Luciano]
   En_revision[En revisión]
     s1a[01 Enunciado - Franco]
     s1b[02 Alcance del proyecto - Juan]
@@ -98,6 +96,8 @@ kanban
     s1f[06 API - Juan]
     s2a[07 Plan de trabajo y Kanban - Luciano]
     s3b[13 Casos de Uso - Luciano]
+    s4a[18 Diseño de Arquitectura General - Luciano]
+    s4d[21 Herramientas Frameworks y Librerías - Luciano]
   Finalizado[Finalizado]
 ```
 
