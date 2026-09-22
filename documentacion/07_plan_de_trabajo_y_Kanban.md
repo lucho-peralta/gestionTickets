@@ -43,7 +43,7 @@
 | `21_herramientas_frameworks_librerías.md` | Herramientas, frameworks y librerías | Luciano |
 | `22_sprints_entregas_parciales.md` | Planificar sprints o entregas parciales | Lucas |
 
-## Semana 4 a 13 — Resto del proyecto (Pendiente)
+## Semana 5 a 13 — Resto del proyecto (Pendiente)
 
 | Semana | Fecha | Etapa | Responsable |
 |---|---|---|---|
