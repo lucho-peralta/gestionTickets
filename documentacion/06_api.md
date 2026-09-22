@@ -1,172 +1,188 @@
-## Documentación de API REST (versión simplificada)
+# Diseño de la REST API
 
-Diseño de la API REST del sistema, alineado al modelo simplificado de identificación por DNI y sin login tradicional.
+Alcance: endpoints, verbos, request/response y contrato de error. No incluye campos ni relaciones de tablas (ERD) ni framework o librería concretos (punto 4).
 
-### Base URL
+## Convenciones generales
 
-```
-https://api.ticketsystem.com
-```
+- Identificación exclusiva por DNI. No existe login ni logout en ningún endpoint.
+- Formato de datos: JSON.
+- Base URL: `https://api.ticketsystem.com` (a revisar)
+- `POST` crea recursos. `GET` los lee. `PATCH` actualiza parcialmente (estado, asignación) — no reemplazan el ticket completo, por eso no se usa `PUT`.
+- Categorías: lista fija, no es un recurso de base de datos ni tiene endpoint propio. Valores (definidos para este documento, no provienen de otro archivo del proyecto): `Soporte Técnico`, `Facturación`, `Reclamo por Servicio`, `Consulta General`, `Otro`.
 
-### Endpoints
+## Endpoints
 
 | Recurso | Endpoint | Verbo | Descripción |
 |---|---|---|---|
-| Usuarios | `/usuarios` | POST | Crea un nuevo usuario (Cliente o Agente). Body: `nombre`, `dni`, `email`, `rol`. |
-| Usuarios | `/usuarios/{dni}` | GET | Obtiene los datos de un usuario por DNI. |
-| Tickets | `/tickets` | POST | Crea un ticket nuevo. Body: `dni_cliente`, `asunto`, `descripcion`, `categoria_id`, `adjuntos[]`. |
+| Usuarios | `/usuarios` | POST | Crea un usuario (Cliente o Agente). |
+| Usuarios | `/usuarios/{dni}` | GET | Obtiene un usuario por DNI. |
+| Tickets | `/tickets` | POST | Crea un ticket. |
 | Tickets | `/tickets` | GET | Lista tickets. Query params: `estado`, `categoria`, `orderBy=fecha`. |
-| Tickets | `/tickets/{id}` | GET | Obtiene el detalle completo de un ticket, incluyendo historial. |
-| Tickets | `/tickets/buscar?dni={dni}` | GET | Busca tickets asociados a un DNI, como Cliente o como Agente. |
-| Tickets | `/tickets/{id}/estado` | PATCH | Actualiza el estado de un ticket. Body: `estado`. |
-| Tickets | `/tickets/{id}/asignar` | PATCH | Asigna el ticket a un agente. Body: `dni_agente`. |
-| Comentarios | `/tickets/{id}/comentarios` | GET | Lista los comentarios/interacciones de un ticket. |
-| Comentarios | `/tickets/{id}/comentarios` | POST | Agrega un comentario al ticket. Body: `dni_autor`, `contenido`. |
-| Categorías | `/categorias` | GET | Lista las categorías disponibles para clasificar tickets. |
-| Reportes | `/reportes/resumen` | GET | Devuelve total de tickets, tickets por estado y categorías más frecuentes. |
+| Tickets | `/tickets/{id}` | GET | Detalle del ticket (sin historial). |
+| Tickets | `/tickets/buscar?dni={dni}` | GET | Tickets asociados a un DNI (creados si es Cliente, asignados si es Agente). |
+| Tickets | `/tickets/{id}/estado` | PATCH | Actualiza el estado del ticket. |
+| Tickets | `/tickets/{id}/asignar` | PATCH | Asigna el ticket a un agente. |
+| Eventos | `/tickets/{id}/eventos` | GET | Historial completo del ticket (comentarios, cambios de estado, reasignaciones), orden cronológico. Query param opcional `tipo` (`comentario`, `cambio_estado`, `reasignacion`). |
+| Eventos | `/tickets/{id}/comentarios` | POST | Agrega un comentario al ticket (se registra como evento tipo `comentario`). |
+| Reportes | `/reportes/resumen` | GET | Total de tickets, tickets por estado, categorías más frecuentes. |
 
-### Detalle de operaciones
+## Detalle de request/response
 
-#### 1. Crear usuario
+### POST /usuarios
 
-**POST** `/usuarios`
-
-Body:
+Request:
 ```json
 {
-  "nombre": "Nombre completo",
-  "dni": "30111222",
-  "email": "usuario@example.com",
-  "rol": "Cliente"
+  "nombre": "string",
+  "dni": "string",
+  "email": "string",
+  "rol": "Cliente | Agente"
 }
 ```
 
-Permite registrar usuarios con rol **Cliente** o **Agente**. El DNI debe ser único y no se requiere contraseña.
-
-#### 2. Obtener usuario por DNI
-
-**GET** `/usuarios/{dni}`
-
-Permite obtener los datos del usuario identificado mediante DNI.
-
-#### 3. Crear ticket
-
-**POST** `/tickets`
-
-Body:
+Response (201):
 ```json
 {
-  "dni_cliente": "30111222",
-  "asunto": "Problema con el servicio",
-  "descripcion": "Descripción del problema",
-  "categoria_id": 1,
-  "adjuntos": []
+  "dni": "string",
+  "nombre": "string",
+  "email": "string",
+  "rol": "Cliente | Agente"
 }
 ```
 
-El sistema genera un identificador único y asigna el estado inicial **Abierto**.
+### GET /usuarios/{dni}
 
-#### 4. Listar tickets
+Response (200): mismo cuerpo que la creación.
 
-**GET** `/tickets`
+### POST /tickets
 
-Query params disponibles:
-- `estado`
-- `categoria`
-- `orderBy=fecha`
-
-Ejemplo:
-```
-/tickets?estado=En%20Progreso&orderBy=fecha
-```
-
-#### 5. Obtener detalle de un ticket
-
-**GET** `/tickets/{id}`
-
-Devuelve el detalle completo del ticket, incluyendo su historial.
-
-#### 6. Buscar tickets por DNI
-
-**GET** `/tickets/buscar?dni={dni}`
-
-Busca los tickets asociados al DNI ingresado.
-- Para un Cliente: devuelve los tickets creados por ese DNI.
-- Para un Agente: devuelve los tickets asignados a ese DNI.
-
-#### 7. Actualizar estado
-
-**PATCH** `/tickets/{id}/estado`
-
-Body:
+Request:
 ```json
 {
-  "estado": "En Progreso"
+  "dni_cliente": "string",
+  "asunto": "string",
+  "descripcion": "string",
+  "categoria": "string",
+  "adjuntos": ["string"]
 }
 ```
 
-Estados disponibles:
-- Abierto
-- En Progreso
-- Esperando al Cliente
-- Resuelto
-- Cerrado
-
-#### 8. Asignar ticket
-
-**PATCH** `/tickets/{id}/asignar`
-
-Body:
+Response (201):
 ```json
 {
-  "dni_agente": "30999888"
+  "id": "string",
+  "asunto": "string",
+  "descripcion": "string",
+  "categoria": "string",
+  "adjuntos": ["string"],
+  "estado": "Abierto",
+  "fecha_creacion": "string (ISO 8601)",
+  "dni_cliente": "string",
+  "dni_agente_asignado": null
 }
 ```
 
-El sistema registra quién asignó el ticket, a qué agente y la fecha/hora.
+### GET /tickets
 
-#### 9. Listar comentarios
+Query params: `estado`, `categoria`, `orderBy=fecha`.
 
-**GET** `/tickets/{id}/comentarios`
+Response (200): lista de objetos con la misma forma que la respuesta de `POST /tickets`.
 
-Devuelve las interacciones o comentarios asociados al ticket.
+### GET /tickets/{id}
 
-#### 10. Agregar comentario
+Response (200): un objeto con la misma forma que la respuesta de `POST /tickets`.
 
-**POST** `/tickets/{id}/comentarios`
+### GET /tickets/buscar?dni={dni}
 
-Body:
+Response (200): lista de tickets. Si el DNI corresponde a un Cliente, tickets donde `dni_cliente` coincide. Si corresponde a un Agente, tickets donde `dni_agente_asignado` coincide.
+
+### PATCH /tickets/{id}/estado
+
+Request:
 ```json
 {
-  "dni_autor": "30111222",
-  "contenido": "El problema continúa."
+  "estado": "Abierto | En Progreso | Esperando al Cliente | Resuelto | Cerrado",
+  "dni_agente": "string"
 }
 ```
 
-Registra autor, timestamp y contenido.
+Transiciones válidas desde el estado actual: ver `15_diagrama_transicion_estado.md`.
 
-#### 11. Listar categorías
+Response (200): objeto ticket actualizado.
 
-**GET** `/categorias`
+### PATCH /tickets/{id}/asignar
 
-Devuelve las categorías disponibles para clasificar tickets.
+Request:
+```json
+{
+  "dni_agente": "string",
+  "dni_asignador": "string"
+}
+```
 
-#### 12. Obtener reportes
+Response (200): objeto ticket actualizado, con `dni_agente_asignado` reemplazado.
 
-**GET** `/reportes/resumen`
+### GET /tickets/{id}/eventos
 
-Devuelve:
-- Cantidad total de tickets.
-- Cantidad de tickets agrupados por estado.
-- Categorías con mayor cantidad de tickets.
+Response (200):
+```json
+[
+  {
+    "id": "string",
+    "ticket_id": "string",
+    "tipo_evento": "comentario | cambio_estado | reasignacion",
+    "dni_actor": "string",
+    "contenido": "string",
+    "valor_anterior": "string | null",
+    "valor_nuevo": "string | null",
+    "timestamp": "string (ISO 8601)"
+  }
+]
+```
 
-### Notas de Diseño
+### POST /tickets/{id}/comentarios
 
-- Los recursos siguen la convención REST: sustantivos en plural y verbos HTTP para representar las acciones.
-- `POST` se utiliza para crear recursos.
-- `GET` se utiliza para leer recursos.
-- `PATCH` se utiliza para actualizar parcialmente recursos.
-- Se utiliza `PATCH` en lugar de `PUT` para las operaciones de actualización de estado y asignación porque no reemplazan el ticket completo.
-- El diseño actual utiliza identificación por DNI y no incorpora autenticación tradicional.
-- Se eliminó el prefijo `/api/v1/` de todos los endpoints: para un proyecto de este alcance no aporta valor y solo agrega ruido a las rutas. Si en el futuro conviven varias versiones de la API, se puede reincorporar como `/v1/`, `/v2/`, etc.
-- Si el proyecto incorpora roles y autenticación en una etapa posterior, se podrían sumar los endpoints `/auth/login` y `/auth/logout`. En ese escenario, cada request podría llevar un token en el header `Authorization`.
+Request:
+```json
+{
+  "dni_autor": "string",
+  "contenido": "string"
+}
+```
+
+Response (201): objeto evento con `tipo_evento: "comentario"`, misma forma que en `GET /tickets/{id}/eventos`.
+
+### GET /reportes/resumen
+
+Response (200):
+```json
+{
+  "total_tickets": "number",
+  "por_estado": { "Abierto": "number", "En Progreso": "number", "Esperando al Cliente": "number", "Resuelto": "number", "Cerrado": "number" },
+  "categorias_mas_frecuentes": [{ "categoria": "string", "cantidad": "number" }]
+}
+```
+
+## Contrato de error
+
+Toda respuesta de error tiene esta forma:
+
+```json
+{
+  "error": "string (código)",
+  "mensaje": "string"
+}
+```
+
+| Código HTTP | Clase | Códigos de `error` |
+|---|---|---|
+| 400 | Error de formato | `CAMPO_OBLIGATORIO_FALTANTE`, `ASUNTO_OBLIGATORIO`, `DESCRIPCION_OBLIGATORIA`, `CATEGORIA_OBLIGATORIA`, `COMENTARIO_VACIO` |
+| 404 | Recurso inexistente | `USUARIO_NO_ENCONTRADO`, `TICKET_NO_ENCONTRADO` |
+| 409 | Conflicto de negocio | `DNI_YA_REGISTRADO`, `TRANSICION_ESTADO_INVALIDA` |
+| 500 | Error no previsto | `ERROR_INTERNO` |
+
+## Fuera de alcance de este documento
+
+- Campos, tipos y relaciones de tablas → ERD.
+- Framework, librería de validación, motor de base de datos → punto 4.
+
