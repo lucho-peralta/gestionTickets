@@ -15,6 +15,7 @@ Alcance: endpoints, verbos, request/response y contrato de error. No incluye cam
 | Recurso | Endpoint | Verbo | Descripción |
 |---|---|---|---|
 | Usuarios | `/usuarios` | POST | Crea un usuario (Cliente o Agente). |
+| Usuarios | `/usuarios` | GET | Lista usuarios. Query param opcional `rol`. Con `rol=Agente` devuelve el listado de agentes para asignar un ticket. |
 | Usuarios | `/usuarios/{dni}` | GET | Obtiene un usuario por DNI. |
 | Tickets | `/tickets` | POST | Crea un ticket. |
 | Tickets | `/tickets` | GET | Lista tickets. Query params: `estado`, `categoria`, `orderBy=fecha`. |
@@ -50,6 +51,12 @@ Response (201):
 }
 ```
 
+### GET /usuarios
+
+Query param opcional: `rol` (`Cliente | Agente`).
+
+Response (200): lista de objetos con la misma forma que la respuesta de `POST /usuarios`. Con `rol=Agente` devuelve el listado de agentes para asignar un ticket.
+
 ### GET /usuarios/{dni}
 
 Response (200): mismo cuerpo que la creación.
@@ -77,6 +84,7 @@ Response (201):
   "adjuntos": ["string"],
   "estado": "Abierto",
   "fecha_creacion": "string (ISO 8601)",
+  "fecha_actualizacion": "string (ISO 8601)",
   "dni_cliente": "string",
   "dni_agente_asignado": null
 }
@@ -176,13 +184,8 @@ Toda respuesta de error tiene esta forma:
 
 | Código HTTP | Clase | Códigos de `error` |
 |---|---|---|
-| 400 | Error de formato | `CAMPO_OBLIGATORIO_FALTANTE`, `ASUNTO_OBLIGATORIO`, `DESCRIPCION_OBLIGATORIA`, `CATEGORIA_OBLIGATORIA`, `COMENTARIO_VACIO` |
+| 400 | Error de formato | `CAMPO_OBLIGATORIO_FALTANTE`, `EMAIL_INVALIDO`, `ASUNTO_OBLIGATORIO`, `DESCRIPCION_OBLIGATORIA`, `CATEGORIA_OBLIGATORIA`, `COMENTARIO_VACIO` |
 | 404 | Recurso inexistente | `USUARIO_NO_ENCONTRADO`, `TICKET_NO_ENCONTRADO` |
 | 409 | Conflicto de negocio | `DNI_YA_REGISTRADO`, `TRANSICION_ESTADO_INVALIDA` |
 | 500 | Error no previsto | `ERROR_INTERNO` |
-
-## Fuera de alcance de este documento
-
-- Campos, tipos y relaciones de tablas → ERD.
-- Framework, librería de validación, motor de base de datos → punto 4.
 
