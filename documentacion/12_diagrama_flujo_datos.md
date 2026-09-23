@@ -1,105 +1,133 @@
-digraph Diagrama0 {
-    // Configuración general fluida (líneas curvas) y espaciado amplio
+# Sistema de Gestión de Tickets de Soporte — Diagramas de Flujo de Datos
+
+Ver Diagrama de Contexto en GraphvizOnline: https://dreampuf.github.io/GraphvizOnline
+
+
+## Diagrama de Contexto
+
+
+```dot
+digraph DiagramaContexto {
+    // Configuración general
     rankdir=LR;
-    splines=true; 
-    nodesep=1.0;
-    ranksep=2.0;
-    
+    splines=true;
+    nodesep=0.8;
+    ranksep=2.2;
+
     fontname="Helvetica,Arial,sans-serif";
-    node [fontname="Helvetica,Arial,sans-serif", margin=0.3];
-    edge [fontname="Helvetica,Arial,sans-serif", fontsize=10, color="#555555"];
-
     labelloc="t";
-    label="Diagrama 0";
-    fontsize=14;
+    label="Diagrama de Contexto";
+    fontsize=16;
 
-    // Entidades Externas
+    node [fontname="Helvetica,Arial,sans-serif", fontsize=12, margin=0.3];
+    edge [fontname="Helvetica,Arial,sans-serif", fontsize=10, color="#555555", arrowsize=0.8];
+
+    // Entidades externas
     node [shape=box, style=filled, fillcolor="#f0f0f0", color="#cccccc"];
     C [label="Cliente"];
     A [label="Agente de Soporte"];
 
-    // Proceso Central
+    // Proceso central
     node [shape=ellipse, style=filled, fillcolor="#e1f5fe", color="#81d4fa"];
     P0 [label="0.0\nSistema de Gestión\nde Tickets de Soporte"];
 
-    // Flujos del Cliente
+    // Flujos del Cliente (Cliente queda a la izquierda)
+    // Arriba: ciclo del usuario
+    C -> P0 [label="Dato de usuario"];
+    C -> P0 [label="Confirmación de usuario", dir=back];
+    // Abajo: ciclo del ticket
     C -> P0 [label="Solicitud de ticket"];
-    P0 -> C [label="Respuesta de ticket"];
+    C -> P0 [label="Respuesta de ticket", dir=back];
 
-    // Flujos del Agente
-    A -> P0 [label="Ticket gestionado"];
-    A -> P0 [label="Solicitud de reporte"];
+    // Flujos del Agente (Agente queda a la derecha)
+    // Arriba: ciclo del usuario
+    P0 -> A [label="Dato de usuario", dir=back];
+    P0 -> A [label="Confirmación de usuario"];
+    // Medio: ciclo del ticket
     P0 -> A [label="Ticket asignado"];
+    P0 -> A [label="Ticket gestionado", dir=back];
+    // Abajo: ciclo del reporte
+    P0 -> A [label="Solicitud de reporte", dir=back];
     P0 -> A [label="Reporte"];
 }
+```
 
-digraph Diagrama1 {
-    // Configuración general fluida (líneas curvas) y espaciado amplio
-    rankdir=TD;
+## Diagrama 0
+
+
+```dot
+digraph Diagrama0 {
+    // Configuración general
+    rankdir=TB;
     splines=true;
     nodesep=1.2;
-    ranksep=2.0;
+    ranksep=1.8;
 
     fontname="Helvetica,Arial,sans-serif";
-    node [fontname="Helvetica,Arial,sans-serif", margin=0.3, fontsize=12];
-    edge [fontname="Helvetica,Arial,sans-serif", fontsize=11, color="#555555"];
-
     labelloc="t";
-    label="Diagrama 1";
+    label="Diagrama 0";
     fontsize=16;
 
-    // CAPA SUPERIOR: Entidades Externas
+    node [fontname="Helvetica,Arial,sans-serif", fontsize=12, margin=0.3];
+    edge [fontname="Helvetica,Arial,sans-serif", fontsize=10, color="#555555", arrowsize=0.8];
+
+    // CAPA SUPERIOR: Entidades externas (Cliente izquierda, Agente derecha)
     {
-        rank=source;
+        rank=same;
         node [shape=box, style=filled, fillcolor="#f0f0f0", color="#cccccc"];
         C [label="Cliente"];
         A [label="Agente de Soporte"];
+        C -> A [style=invis];
     }
 
-    // CAPA CENTRAL: Procesos
+    // CAPA CENTRAL: Procesos (1.0, 2.0, 3.0 de izquierda a derecha)
     {
         rank=same;
         node [shape=ellipse, style=filled, fillcolor="#e1f5fe", color="#81d4fa"];
         P1 [label="1.0\nGESTIONAR USUARIO"];
         P2 [label="2.0\nGESTIONAR TICKET"];
         P3 [label="3.0\nGENERAR REPORTE"];
+        P1 -> P2 -> P3 [style=invis];
     }
 
-    // CAPA INFERIOR: Almacenamientos de Datos
+    // CAPA INFERIOR: Almacenamientos (D1, D3, D2 de izquierda a derecha)
     {
-        rank=sink;
+        rank=same;
         node [shape=cylinder, style=filled, fillcolor="#fff3e0", color="#ffcc80"];
         D1 [label="D1 USUARIOS"];
-        D2 [label="D2 TICKETS"];
         D3 [label="D3 EVENTOS TICKET"];
+        D2 [label="D2 TICKETS"];
+        D1 -> D3 -> D2 [style=invis];
     }
 
     // --- Flujos del Cliente ---
     C -> P1 [label="Dato de usuario"];
-    P1 -> C [label="Confirmación de usuario"];
+    C -> P1 [label="Confirmación de usuario", dir=back];
 
     C -> P2 [label="Solicitud de ticket"];
-    P2 -> C [label="Respuesta de ticket"];
+    C -> P2 [label="Respuesta de ticket", dir=back];
 
     // --- Flujos del Agente ---
     A -> P1 [label="Dato de usuario"];
-    P1 -> A [label="Confirmación de usuario"];
+    A -> P1 [label="Confirmación de usuario", dir=back];
 
+    A -> P2 [label="Ticket asignado", dir=back];
     A -> P2 [label="Ticket gestionado"];
-    P2 -> A [label="Ticket asignado"];
 
     A -> P3 [label="Solicitud de reporte"];
-    P3 -> A [label="Reporte"];
+    A -> P3 [label="Reporte", dir=back];
 
-    // --- Flujos Internos del Sistema ---
+    // --- Flujos internos: procesos y almacenamientos ---
     P1 -> D1 [label="Registro de usuario"];
-    D1 -> P2 [label="Validación de usuario"];
-
-    P2 -> D2 [label="Actualiza ticket"];
-    D2 -> P2 [label="Lee ticket"];
+    P2 -> D1 [label="Validación de usuario", dir=back];
 
     P2 -> D3 [label="Nuevo evento"];
-    D3 -> P2 [label="Historial de evento"];
+    P2 -> D3 [label="Historial de eventos", dir=back];
 
-    D2 -> P3 [label="Métrica de ticket"];
+    P2 -> D2 [label="Ticket actualizado"];
+    P2 -> D2 [label="Datos de ticket", dir=back];
+
+    P3 -> D2 [label="Datos de tickets", dir=back];
 }
+```
+
