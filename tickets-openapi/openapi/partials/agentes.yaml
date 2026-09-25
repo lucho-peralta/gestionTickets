@@ -1,0 +1,83 @@
+paths:
+
+  /agentes:
+    summary: Agentes de soporte (ya cargados en el sistema).
+
+    get:
+      tags: [agentes]
+      operationId: agentes-get
+      summary: Lista los DNI de los agentes disponibles para asignar.
+      responses:
+        "200":
+          description: Lista de agentes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/schemas/agente"
+              examples:
+                dos-agentes:
+                  value:
+                    - dni_agente: "25987654"
+                    - dni_agente: "28555111"
+
+  /agentes/{dni}/tickets:
+    summary: Tickets asignados a un agente.
+    parameters:
+      - in: path
+        name: dni
+        required: true
+        description: DNI del agente.
+        schema:
+          $ref: "common.yaml#/schemas/dni"
+
+    get:
+      tags: [agentes]
+      operationId: agentes-dni-tickets-get
+      summary: Lista los tickets asignados a un agente (su bandeja de trabajo).
+      parameters:
+        - in: query
+          name: estado
+          required: false
+          description: Filtra por estado de la asignación.
+          schema:
+            $ref: "common.yaml#/schemas/estado"
+      responses:
+        "200":
+          description: Tickets del agente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "tickets.yaml#/schemas/ticket"
+              examples:
+                vacio:
+                  value: []
+                uno-en-proceso:
+                  value:
+                    - id: 1
+                      titulo: No puedo iniciar sesión
+                      descripcion: Al ingresar mi usuario me dice contraseña incorrecta.
+                      fecha: "2026-09-20T10:15:00Z"
+                      dni_cliente: "30123456"
+                      dni_agente: "25987654"
+                      estado: en_proceso
+        "404":
+          $ref: "common.yaml#/responses/agente-no-encontrado"
+
+# ----------------------------------------------
+# Definición de Esquemas
+# ----------------------------------------------
+
+schemas:
+
+  agente:
+    description: Fila de la tabla agente_asignado.
+    type: object
+    required:
+      - dni_agente
+    properties:
+      dni_agente:
+        $ref: "common.yaml#/schemas/dni"

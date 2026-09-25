@@ -1,0 +1,255 @@
+paths:
+
+  /tickets:
+    summary: Colección de tickets.
+
+    get:
+      tags: [tickets]
+      operationId: tickets-get
+      summary: Lista los tickets, con su agente y estado actual.
+      parameters:
+        - in: query
+          name: estado
+          required: false
+          description: Filtra por estado. "sin_asignar" devuelve los tickets que todavía no tienen agente.
+          schema:
+            type: string
+            enum:
+              - sin_asignar
+              - asignado
+              - en_proceso
+              - resuelto
+        - in: query
+          name: dni_cliente
+          required: false
+          description: Filtra los tickets reportados por un cliente.
+          schema:
+            $ref: "common.yaml#/schemas/dni"
+      responses:
+        "200":
+          description: Lista de tickets.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/schemas/ticket"
+              examples:
+                vacio:
+                  value: []
+                uno-sin-asignar:
+                  value:
+                    - id: 1
+                      titulo: No puedo iniciar sesión
+                      descripcion: Al ingresar mi usuario me dice contraseña incorrecta.
+                      fecha: "2026-09-20T10:15:00Z"
+                      dni_cliente: "30123456"
+                      dni_agente: null
+                      estado: sin_asignar
+                varios:
+                  value:
+                    - id: 1
+                      titulo: No puedo iniciar sesión
+                      descripcion: Al ingresar mi usuario me dice contraseña incorrecta.
+                      fecha: "2026-09-20T10:15:00Z"
+                      dni_cliente: "30123456"
+                      dni_agente: "25987654"
+                      estado: en_proceso
+                    - id: 2
+                      titulo: Factura duplicada
+                      descripcion: Me llegó dos veces la factura de agosto.
+                      fecha: "2026-09-21T14:40:00Z"
+                      dni_cliente: "40111222"
+                      dni_agente: null
+                      estado: sin_asignar
+        "400":
+          $ref: "common.yaml#/responses/datos-invalidos"
+
+    post:
+      tags: [tickets]
+      operationId: tickets-post
+      summary: Registra un nuevo ticket. El id y la fecha los genera el servidor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/schemas/ticket-nuevo"
+            examples:
+              login:
+                value:
+                  titulo: No puedo iniciar sesión
+                  descripcion: Al ingresar mi usuario me dice contraseña incorrecta.
+                  dni_cliente: "30123456"
+      responses:
+        "201":
+          description: Ticket creado. Arranca sin agente asignado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/schemas/ticket"
+              examples:
+                login:
+                  value:
+                    id: 1
+                    titulo: No puedo iniciar sesión
+                    descripcion: Al ingresar mi usuario me dice contraseña incorrecta.
+                    fecha: "2026-09-20T10:15:00Z"
+                    dni_cliente: "30123456"
+                    dni_agente: null
+                    estado: sin_asignar
+        "400":
+          $ref: "common.yaml#/responses/datos-invalidos"
+
+  /tickets/{id}:
+    summary: Un ticket en particular.
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+
+    get:
+      tags: [tickets]
+      operationId: tickets-id-get
+      summary: Obtiene un ticket con su agente y estado actual.
+      responses:
+        "200":
+          description: Ticket encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/schemas/ticket"
+              examples:
+                sin-asignar:
+                  value:
+                    id: 1
+                    titulo: No puedo iniciar sesión
+                    descripcion: Al ingresar mi usuario me dice contraseña incorrecta.
+                    fecha: "2026-09-20T10:15:00Z"
+                    dni_cliente: "30123456"
+                    dni_agente: null
+                    estado: sin_asignar
+                resuelto:
+                  value:
+                    id: 1
+                    titulo: No puedo iniciar sesión
+                    descripcion: Al ingresar mi usuario me dice contraseña incorrecta.
+                    fecha: "2026-09-20T10:15:00Z"
+                    dni_cliente: "30123456"
+                    dni_agente: "25987654"
+                    estado: resuelto
+        "404":
+          $ref: "common.yaml#/responses/ticket-no-encontrado"
+
+    patch:
+      tags: [tickets]
+      operationId: tickets-id-patch
+      summary: Corrige el título y/o la descripción de un ticket.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                titulo:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                descripcion:
+                  type: string
+                  minLength: 1
+            examples:
+              corregir-titulo:
+                value:
+                  titulo: No puedo iniciar sesión en la app
+      responses:
+        "200":
+          description: Ticket actualizado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/schemas/ticket"
+              examples:
+                corregido:
+                  value:
+                    id: 1
+                    titulo: No puedo iniciar sesión en la app
+                    descripcion: Al ingresar mi usuario me dice contraseña incorrecta.
+                    fecha: "2026-09-20T10:15:00Z"
+                    dni_cliente: "30123456"
+                    dni_agente: null
+                    estado: sin_asignar
+        "400":
+          $ref: "common.yaml#/responses/datos-invalidos"
+        "404":
+          $ref: "common.yaml#/responses/ticket-no-encontrado"
+
+# ----------------------------------------------
+# Definición de Esquemas
+# ----------------------------------------------
+
+schemas:
+
+  ticket-nuevo:
+    description: Datos que envía el cliente para registrar un ticket.
+    type: object
+    required:
+      - titulo
+      - descripcion
+      - dni_cliente
+    properties:
+      titulo:
+        description: Resumen corto de qué ocurrió.
+        type: string
+        minLength: 1
+        maxLength: 100
+      descripcion:
+        description: Detalle del reclamo, consulta o pedido de ayuda.
+        type: string
+        minLength: 1
+      dni_cliente:
+        $ref: "common.yaml#/schemas/dni"
+
+  ticket:
+    description: |
+      Ticket tal como lo devuelve la API. Combina la tabla tickets con su
+      asignación (si la tiene). Si no tiene agente, dni_agente es null y el
+      estado es "sin_asignar".
+    type: object
+    required:
+      - id
+      - titulo
+      - descripcion
+      - fecha
+      - dni_cliente
+      - dni_agente
+      - estado
+    properties:
+      id:
+        type: integer
+      titulo:
+        type: string
+      descripcion:
+        type: string
+      fecha:
+        description: Momento en que se reportó el ticket (lo pone el servidor).
+        type: string
+        format: date-time
+      dni_cliente:
+        $ref: "common.yaml#/schemas/dni"
+      dni_agente:
+        description: DNI del agente asignado, o null si todavía no tiene.
+        type: string
+        nullable: true
+        pattern: '^[0-9]{7,8}$'
+      estado:
+        type: string
+        enum:
+          - sin_asignar
+          - asignado
+          - en_proceso
+          - resuelto

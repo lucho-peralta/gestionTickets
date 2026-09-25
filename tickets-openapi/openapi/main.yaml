@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  title: Tickets de Soporte REST API
+  version: 0.0.1
+  description: |
+    API del Sistema de Gestión de Tickets de Soporte.
+    Permite registrar tickets (reclamos, consultas o pedidos de ayuda),
+    asignarlos a un agente de soporte y seguir su estado hasta la resolución.
+
+    Alcance (situación ideal):
+    - Todo el que registra un ticket es un cliente (se identifica por DNI).
+    - Los agentes ya están cargados en el sistema; la API solo los consulta.
+    - Cada ticket tiene como máximo un agente asignado.
+  license:
+    name: MIT
+    url: https://opensource.org/license/MIT
+
+servers:
+  - url: "http://www.tickets.ar"
+
+# Sin autenticación: la API es pública (alcance: situación ideal).
+security: []
+
+tags:
+  - name: tickets
+    description: Registro y consulta de tickets.
+  - name: asignaciones
+    description: Asignación de un agente a un ticket y seguimiento de su estado.
+  - name: agentes
+    description: Consulta de agentes de soporte (precargados).
+
+paths:
+  /tickets:                   { $ref: "partials/tickets.yaml#/paths/~1tickets" }
+  /tickets/{id}:              { $ref: "partials/tickets.yaml#/paths/~1tickets~1{id}" }
+  /tickets/{id}/asignacion:   { $ref: "partials/asignaciones.yaml#/paths/~1tickets~1{id}~1asignacion" }
+  /agentes:                   { $ref: "partials/agentes.yaml#/paths/~1agentes" }
+  /agentes/{dni}/tickets:     { $ref: "partials/agentes.yaml#/paths/~1agentes~1{dni}~1tickets" }

@@ -1,0 +1,71 @@
+# ----------------------------------------------
+# Esquemas compartidos
+# ----------------------------------------------
+
+schemas:
+
+  message:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+
+  dni:
+    description: DNI argentino, solo números (7 u 8 dígitos). Se usa string para no perder ceros ni hacer cuentas con él.
+    type: string
+    pattern: '^[0-9]{7,8}$'
+    example: "30123456"
+
+  estado:
+    description: |
+      Estado de la asignación de un ticket.
+      - asignado: el ticket tiene un agente, todavía no empezó a trabajarlo.
+      - en_proceso: el agente está trabajando en el ticket.
+      - resuelto: el problema fue resuelto.
+    type: string
+    enum:
+      - asignado
+      - en_proceso
+      - resuelto
+
+# ----------------------------------------------
+# Respuestas compartidas
+# ----------------------------------------------
+
+responses:
+
+
+  datos-invalidos:
+    description: Los datos enviados no son válidos.
+    content:
+      application/json:
+        schema:
+          $ref: "#/schemas/message"
+        examples:
+          default:
+            value:
+              message: "Datos Invalidos"
+
+  ticket-no-encontrado:
+    description: Ticket no encontrado.
+    content:
+      application/json:
+        schema:
+          $ref: "#/schemas/message"
+        examples:
+          default:
+            value:
+              message: "Ticket No Encontrado"
+
+  agente-no-encontrado:
+    description: Agente no encontrado.
+    content:
+      application/json:
+        schema:
+          $ref: "#/schemas/message"
+        examples:
+          default:
+            value:
+              message: "Agente No Encontrado"

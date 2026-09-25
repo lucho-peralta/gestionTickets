@@ -1,0 +1,177 @@
+paths:
+
+  /tickets/{id}/asignacion:
+    summary: Agente asignado a un ticket y estado de su resolución.
+    parameters:
+      - in: path
+        name: id
+        required: true
+        description: Id del ticket.
+        schema:
+          type: integer
+
+    get:
+      tags: [asignaciones]
+      operationId: asignacion-get
+      summary: Obtiene la asignación (agente y estado) de un ticket.
+      responses:
+        "200":
+          description: Asignación del ticket.
+          content:
+            application/json:
+              schema:
+                $ref: "#/schemas/asignacion"
+              examples:
+                en-proceso:
+                  value:
+                    id_ticket: 1
+                    dni_agente: "25987654"
+                    estado: en_proceso
+        "404":
+          description: El ticket no existe o todavía no tiene agente asignado.
+          content:
+            application/json:
+              schema:
+                $ref: "common.yaml#/schemas/message"
+              examples:
+                ticket:
+                  value:
+                    message: "Ticket No Encontrado"
+                sin-asignar:
+                  value:
+                    message: "Ticket Sin Asignar"
+
+    post:
+      tags: [asignaciones]
+      operationId: asignacion-post
+      summary: Asigna un agente a un ticket. El estado inicial es "asignado".
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - dni_agente
+              properties:
+                dni_agente:
+                  $ref: "common.yaml#/schemas/dni"
+            examples:
+              asignar:
+                value:
+                  dni_agente: "25987654"
+      responses:
+        "201":
+          description: Agente asignado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/schemas/asignacion"
+              examples:
+                asignado:
+                  value:
+                    id_ticket: 1
+                    dni_agente: "25987654"
+                    estado: asignado
+        "400":
+          $ref: "common.yaml#/responses/datos-invalidos"
+        "404":
+          description: El ticket o el agente no existen.
+          content:
+            application/json:
+              schema:
+                $ref: "common.yaml#/schemas/message"
+              examples:
+                ticket:
+                  value:
+                    message: "Ticket No Encontrado"
+                agente:
+                  value:
+                    message: "Agente No Encontrado"
+        "409":
+          description: El ticket ya tiene un agente asignado.
+          content:
+            application/json:
+              schema:
+                $ref: "common.yaml#/schemas/message"
+              examples:
+                default:
+                  value:
+                    message: "Ticket Ya Asignado"
+
+    patch:
+      tags: [asignaciones]
+      operationId: asignacion-patch
+      summary: Actualiza el estado del ticket (avance de la resolución).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - estado
+              properties:
+                estado:
+                  $ref: "common.yaml#/schemas/estado"
+            examples:
+              en-proceso:
+                value:
+                  estado: en_proceso
+              resuelto:
+                value:
+                  estado: resuelto
+      responses:
+        "200":
+          description: Estado actualizado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/schemas/asignacion"
+              examples:
+                en-proceso:
+                  value:
+                    id_ticket: 1
+                    dni_agente: "25987654"
+                    estado: en_proceso
+                resuelto:
+                  value:
+                    id_ticket: 1
+                    dni_agente: "25987654"
+                    estado: resuelto
+        "400":
+          $ref: "common.yaml#/responses/datos-invalidos"
+        "404":
+          description: El ticket no existe o todavía no tiene agente asignado.
+          content:
+            application/json:
+              schema:
+                $ref: "common.yaml#/schemas/message"
+              examples:
+                ticket:
+                  value:
+                    message: "Ticket No Encontrado"
+                sin-asignar:
+                  value:
+                    message: "Ticket Sin Asignar"
+
+# ----------------------------------------------
+# Definición de Esquemas
+# ----------------------------------------------
+
+schemas:
+
+  asignacion:
+    description: Fila de la tabla asignacion (ticket + agente + estado).
+    type: object
+    required:
+      - id_ticket
+      - dni_agente
+      - estado
+    properties:
+      id_ticket:
+        type: integer
+      dni_agente:
+        $ref: "common.yaml#/schemas/dni"
+      estado:
+        $ref: "common.yaml#/schemas/estado"
