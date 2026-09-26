@@ -1,0 +1,33 @@
+# Aca tenes tu lista de requerimientos, viejo culo humedo.
+
+TABLA TICKET:
+id PK
+dni_agente FK
+dni_cliente
+categoria
+descripcion
+fecha_inicio
+fecha_finalizacion
+estado (asignado - en proceso - pendiente confirmacion - cerrado)
+
+TABLA AGENTE:
+dni PK
+nombre
+
+RELACIONES:
+
+TICKET->AGENTE (1;1)
+AGENTE->TICKET (1;N)
+
+ACLARACIONES:
+El agente modifica el estado a pendiente de confirmacion cuando realizo su trabajo.
+El cliente modifica descripcion informando si su tiquet fue resuelto.
+Agente modifica el estado de pendiente confirmacion a cerrado cuando recibe la confirmacion del cliente.
+
+ENDPOINTS API:
+
+Cliente: crear ticket, consulta ticket (usando DNI), modificar descripcion de ticket.
+
+Sistema: Asigna agente, averigua frecuencia de categoria, tiempo promedio de resolucion, top categorias.
+
+Agente: Consultar tickets asignados (DNI), modificar estado.
