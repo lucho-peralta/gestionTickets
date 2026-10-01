@@ -9,8 +9,9 @@ Proyecto de la materia (ISFDT 166 — Análisis de Sistemas). Sistema web para r
 | Quién | Qué hace |
 |---|---|
 | **Cliente** | Crea un ticket con su DNI, consulta sus tickets por DNI y confirma (cierra) el ticket cuando su problema fue resuelto. |
-| **Sistema** | Asigna automáticamente un agente a cada ticket nuevo y calcula los reportes: frecuencia por categoría, tiempo promedio de resolución y top de categorías. |
-| **Agente de soporte** | Consulta los tickets que tiene asignados (por su DNI) y les cambia el estado; cuando termina su trabajo, lo pasa a *En revisión* para que el cliente confirme. |
+| **Agente de soporte** | Consulta los tickets que tiene asignados (por su DNI) y les cambia el estado; cuando termina su trabajo, lo pasa a *En revisión* para que el cliente confirme. También consulta los reportes. |
+
+Además, al crear un ticket el sistema **asigna automáticamente un agente**, y cuando se consultan los reportes los calcula: frecuencia por categoría, tiempo promedio de resolución y top de categorías.
 
 Ciclo de vida del ticket: **Asignado → En proceso → En revisión → Cerrado**.
 

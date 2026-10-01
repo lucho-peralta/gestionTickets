@@ -14,7 +14,6 @@ Esta carpeta contiene la especificación **OpenAPI 3** de la REST API. La explic
 | `openapi/partials/clientes.yaml` | `GET /clientes/{dni}/tickets` |
 | `openapi/partials/agentes.yaml` | `GET /agentes/{dni}/tickets` |
 | `openapi/partials/reportes.yaml` | Los tres endpoints de `/reportes` |
-| `openapi/partials/asignaciones.yaml` | **Obsoleto** (modelo anterior). Se puede borrar. |
 
 ## Comandos útiles
 

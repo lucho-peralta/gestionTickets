@@ -72,7 +72,7 @@ digraph CasosDeUso {
 
 ## CU-02: Asignar agente
 
-* **Actor:** Sistema (incluido en CU-01)
+* **Actor:** Cliente (caso incluido en CU-01; lo ejecuta el sistema automáticamente)
 * **Descripción:** Asigna automáticamente un responsable a cada ticket nuevo.
 * **Precondiciones:** Se está creando un ticket.
 * **Disparador:** Paso 5 de CU-01.

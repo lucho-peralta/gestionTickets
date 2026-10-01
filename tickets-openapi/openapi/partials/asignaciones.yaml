@@ -1,8 +1,0 @@
-# OBSOLETO — se puede borrar.
-#
-# Este archivo pertenecía al modelo anterior (tabla intermedia "asignacion" y
-# asignación manual de agentes). En el modelo actual el sistema asigna el agente
-# automáticamente dentro de POST /tickets y el estado se cambia con
-# PATCH /tickets/{id}/estado (ver partials/tickets.yaml).
-#
-# main.yaml ya no lo referencia.

@@ -19,6 +19,13 @@ Valores de referencia usados en todo el documento:
 - El sistema registra la **fecha de inicio** (fecha y hora actuales).
 - El sistema asigna un agente (RF-02) y deja el ticket en estado **Asignado**.
 - El sistema muestra el número de ticket y el agente asignado.
+- Si falta algún campo, el sistema informa "Complete todos los campos"; si la categoría no es de la lista, "Categoría inválida".
+
+#### RF-02: Asignar agente automáticamente
+
+- Ocurre dentro de RF-01, al crearse el ticket: el sistema elige **al azar** un agente entre los cargados en la base.
+- Cada ticket tiene exactamente un agente; no hay reasignación.
+- Si no hay agentes cargados, el ticket no se crea y el sistema informa "No hay agentes disponibles".
 
 #### RF-03: Consultar tickets del cliente
 
@@ -39,7 +46,6 @@ Valores de referencia usados en todo el documento:
 
 - El agente ingresa su DNI.
 - El sistema muestra los tickets cuyo `dni_agente` coincide, del más antiguo al más reciente (para atender primero los que llevan más tiempo).
-- Permite filtrar por estado.
 - Si el DNI no corresponde a ningún agente, el sistema informa "Agente no encontrado".
 
 #### RF-06: Actualizar estado
@@ -47,14 +53,7 @@ Valores de referencia usados en todo el documento:
 - El agente cambia el estado de uno de sus tickets.
 - Camino esperado: **Asignado → En proceso → En revisión**.
 - Cuando termina su trabajo, el agente pasa el ticket a **En revisión** (pendiente de confirmación del cliente). El agente **no** cierra el ticket.
-
-### Sistema (procesos automáticos)
-
-#### RF-02: Asignar agente automáticamente
-
-- Al crearse un ticket, el sistema elige **al azar** un agente entre los cargados en la base.
-- Cada ticket tiene exactamente un agente; no hay reasignación.
-- Si no hay agentes cargados, el ticket no se crea y el sistema informa "No hay agentes disponibles".
+- Si el estado no es de la lista, el sistema informa "Estado inválido".
 
 #### RF-07: Reporte — Frecuencia por categoría
 
@@ -63,12 +62,12 @@ Valores de referencia usados en todo el documento:
 #### RF-08: Reporte — Tiempo promedio de resolución
 
 - Promedio de `fecha_finalizacion − fecha_inicio` de los tickets **cerrados**, expresado en horas.
-- Opcionalmente filtrado por categoría.
-- Si no hay tickets cerrados, el promedio se informa como vacío (no como 0).
+- Opcionalmente, el agente elige una categoría y el promedio se calcula solo con los tickets de esa categoría.
+- Si no hay tickets cerrados, el sistema informa "Todavía no hay tickets cerrados".
 
 #### RF-09: Reporte — Top de categorías
 
-- Las N categorías con más tickets, de mayor a menor (por defecto N = 3).
+- Las N categorías con más tickets, de mayor a menor (por defecto N = 3; N puede ir de 1 a 4).
 
 ## Requerimientos No Funcionales (RNF)
 

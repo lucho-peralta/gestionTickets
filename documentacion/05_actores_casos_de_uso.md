@@ -1,6 +1,5 @@
 # Actores, User Stories y Escenarios Gherkin
 
-Responsable: Lucas
 
 ## 1. Identificación de actores
 
@@ -24,9 +23,12 @@ Miembro del equipo de soporte que atiende y resuelve los tickets.
 | Informar el avance cambiando el estado | Se identifica con su DNI |
 | Consultar los reportes para mejorar el servicio | Accede por la interfaz web, sin login |
 
-### Sistema (procesos automáticos)
+### Comportamiento automático (no es un actor)
 
-No es un actor humano, pero realiza tareas por su cuenta: **asigna un agente** a cada ticket nuevo y **calcula los reportes**.
+El sistema no es un actor: los actores son siempre externos a él. Sí hay tareas que realiza por su cuenta como respuesta a la acción de un actor:
+
+* **Asignar un agente** a cada ticket nuevo: ocurre dentro de *Crear ticket* (US-01), que inicia el Cliente.
+* **Calcular los reportes**: ocurre cuando el Agente de soporte los consulta (US-07, US-08, US-09).
 
 ## 2. User Stories con criterios de aceptación
 
@@ -204,7 +206,8 @@ Característica: Frecuencia por categoría
 | Criterio | Resultado esperado |
 |---|---|
 | CA-8.1 Hay tickets cerrados | Promedio en horas entre fecha de inicio y de finalización |
-| CA-8.2 No hay tickets cerrados | Promedio vacío |
+| CA-8.2 No hay tickets cerrados | Mensaje: "Todavía no hay tickets cerrados" |
+| CA-8.3 Elige una categoría | Promedio calculado solo con los tickets cerrados de esa categoría |
 
 ```gherkin
 Característica: Tiempo promedio de resolución
@@ -237,8 +240,7 @@ Característica: Top de categorías
 
 | Actor | User stories |
 |---|---|
-| Cliente | US-01, US-03, US-04 |
+| Cliente | US-01, US-02 (incluida en US-01), US-03, US-04 |
 | Agente de soporte | US-05, US-06, US-07, US-08, US-09 |
-| Sistema (automático) | US-02 (y el cálculo de US-07, US-08, US-09) |
 
-**Resumen:** 9 user stories · 2 actores + procesos automáticos · 4 estados · identificación por DNI · sin login.
+**Resumen:** 9 user stories · 2 actores · 4 estados · identificación por DNI · sin login.

@@ -26,7 +26,7 @@ Es un proyecto **con fines educativos**: se prioriza que el sistema sea simple y
 |---|---|
 | **Cliente** | Crear un ticket, consultar sus tickets por DNI y cerrar el ticket cuando su problema fue resuelto. |
 | **Agente de soporte** | Consultar los tickets que tiene asignados por su DNI y cambiarles el estado. |
-| **Sistema** (procesos automáticos) | Asignar un agente a cada ticket nuevo y calcular los reportes. |
+
 
 El detalle de cada actor y sus user stories está en `05_actores_casos_de_uso.md`.
 

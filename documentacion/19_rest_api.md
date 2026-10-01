@@ -34,7 +34,7 @@ La API permite:
 | Fechas | ISO 8601 (ej.: `"2026-09-20T10:15:00Z"`). Las pone el servidor. |
 | Categorías | `conexion`, `facturacion`, `consulta_general`, `otro` |
 | Estados | `asignado`, `en_proceso`, `en_revision`, `cerrado` |
-| Errores | `{ "message": "texto del error" }` |
+| Errores | `{ "message": "texto del error" }`. El texto es el mismo que muestran los casos de uso (`05` y `13`), así el front lo puede mostrar tal cual. |
 
 ### Códigos de respuesta
 
@@ -99,15 +99,15 @@ El cliente reporta un problema. El servidor genera `id` y `fecha_inicio`, asigna
 | Código | Respuesta |
 |---|---|
 | 201 | El ticket creado (objeto Ticket) |
-| 400 | `{ "message": "Datos Invalidos" }` |
-| 409 | `{ "message": "No Hay Agentes Disponibles" }` |
+| 400 | `{ "message": "Complete todos los campos" }` o `{ "message": "Categoría inválida" }` o `{ "message": "DNI inválido" }` |
+| 409 | `{ "message": "No hay agentes disponibles" }` |
 
 ### 2. `GET /tickets/{id}` — Ver un ticket
 
 | Código | Respuesta |
 |---|---|
 | 200 | Objeto Ticket |
-| 404 | `{ "message": "Ticket No Encontrado" }` |
+| 404 | `{ "message": "Ticket no encontrado" }` |
 
 ### 3. `PATCH /tickets/{id}/estado` — Cambiar estado
 
@@ -125,8 +125,8 @@ Cuando el nuevo estado es `cerrado`, el servidor registra `fecha_finalizacion`.
 | Código | Respuesta |
 |---|---|
 | 200 | Objeto Ticket actualizado |
-| 400 | `{ "message": "Datos Invalidos" }` (estado fuera de la lista) |
-| 404 | `{ "message": "Ticket No Encontrado" }` |
+| 400 | `{ "message": "Estado inválido" }` |
+| 404 | `{ "message": "Ticket no encontrado" }` |
 
 Ejemplo de respuesta 200 al cerrar:
 
@@ -145,12 +145,12 @@ Ejemplo de respuesta 200 al cerrar:
 
 ### 4. `GET /clientes/{dni}/tickets` — Tickets del cliente
 
-Devuelve los tickets del cliente, del más reciente al más antiguo. Como no hay tabla de clientes, un DNI sin tickets devuelve una lista vacía (no un 404).
+Devuelve los tickets del cliente, del más reciente al más antiguo. Como no hay tabla de clientes, un DNI sin tickets devuelve una lista vacía (no un 404); en ese caso el front muestra "No hay tickets para este DNI".
 
 | Código | Respuesta |
 |---|---|
 | 200 | Lista de objetos Ticket (puede estar vacía) |
-| 400 | `{ "message": "Datos Invalidos" }` (DNI mal formado) |
+| 400 | `{ "message": "DNI inválido" }` (DNI mal formado) |
 
 ### 5. `GET /agentes/{dni}/tickets` — Tickets asignados
 
@@ -164,8 +164,8 @@ Devuelve la bandeja de trabajo del agente, del ticket más antiguo al más recie
 | Código | Respuesta |
 |---|---|
 | 200 | Lista de objetos Ticket (puede estar vacía) |
-| 400 | `{ "message": "Datos Invalidos" }` |
-| 404 | `{ "message": "Agente No Encontrado" }` |
+| 400 | `{ "message": "DNI inválido" }` o `{ "message": "Estado inválido" }` (filtro fuera de la lista) |
+| 404 | `{ "message": "Agente no encontrado" }` |
 
 ### 6. `GET /reportes/frecuencia-categorias` — Frecuencia por categoría
 
@@ -192,12 +192,12 @@ Promedio, en horas, entre `fecha_inicio` y `fecha_finalizacion` de los tickets c
 { "categoria": null, "tickets_cerrados": 15, "promedio_horas": 6.4 }
 ```
 
-Si no hay tickets cerrados, `tickets_cerrados` es `0` y `promedio_horas` es `null`.
+Si no hay tickets cerrados, `tickets_cerrados` es `0` y `promedio_horas` es `null`; el front muestra "Todavía no hay tickets cerrados".
 
 | Código | Respuesta |
 |---|---|
 | 200 | Objeto con el promedio |
-| 400 | `{ "message": "Datos Invalidos" }` (categoría fuera de la lista) |
+| 400 | `{ "message": "Categoría inválida" }` |
 
 ### 8. `GET /reportes/top-categorias` — Top de categorías
 
@@ -218,7 +218,7 @@ Las N categorías con más tickets, de mayor a menor.
 | Código | Respuesta |
 |---|---|
 | 200 | Lista ordenada |
-| 400 | `{ "message": "Datos Invalidos" }` (límite fuera de rango) |
+| 400 | `{ "message": "Límite inválido" }` (fuera del rango 1 a 4) |
 
 ## 7. Flujo típico de uso
 

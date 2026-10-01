@@ -102,15 +102,29 @@ schemas:
 responses:
 
   datos-invalidos:
-    description: Los datos enviados no son válidos.
+    description: >-
+      Los datos enviados no son válidos. El mensaje indica qué campo falló
+      (son los mismos textos que muestran los casos de uso).
     content:
       application/json:
         schema:
           $ref: "#/schemas/message"
         examples:
-          default:
+          campos-incompletos:
             value:
-              message: "Datos Invalidos"
+              message: "Complete todos los campos"
+          categoria-invalida:
+            value:
+              message: "Categoría inválida"
+          estado-invalido:
+            value:
+              message: "Estado inválido"
+          dni-invalido:
+            value:
+              message: "DNI inválido"
+          limite-invalido:
+            value:
+              message: "Límite inválido"
 
   ticket-no-encontrado:
     description: Ticket no encontrado.
@@ -121,7 +135,7 @@ responses:
         examples:
           default:
             value:
-              message: "Ticket No Encontrado"
+              message: "Ticket no encontrado"
 
   agente-no-encontrado:
     description: Agente no encontrado.
@@ -132,7 +146,7 @@ responses:
         examples:
           default:
             value:
-              message: "Agente No Encontrado"
+              message: "Agente no encontrado"
 
   sin-agentes:
     description: No hay agentes cargados para asignar el ticket.
@@ -143,4 +157,4 @@ responses:
         examples:
           default:
             value:
-              message: "No Hay Agentes Disponibles"
+              message: "No hay agentes disponibles"
