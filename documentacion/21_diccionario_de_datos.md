@@ -1,327 +1,115 @@
-# Diccionario de Datos - Sistema de Gestión de Tickets de Soporte
+# Diccionario de Datos
 
-## 1. Entidades
+Responsable: Juan
+
+Describe cada elemento de los DFD de `12_diagrama_flujo_datos.md`: entidades externas, procesos, almacenamientos, flujos, registros y elementos de datos.
+
+## 1. Entidades externas
 
 ### Cliente
-- **Descripción:** Persona que utiliza el servicio y necesita reportar problemas o hacer consultas.
-- **Nombre(s) alternativo(s):** Usuario Final.
-- **Flujos de datos de entrada:** Confirmación de usuario, Respuesta de ticket.
-- **Flujos de datos de salida:** Dato de usuario, Solicitud de ticket.
+- **Descripción:** Persona que usa el servicio y reporta un problema, consulta o reclamo.
+- **Nombres alternativos:** Usuario final.
+- **Flujos de entrada:** Comprobante de ticket, Tickets del cliente.
+- **Flujos de salida:** Datos del ticket, DNI del cliente, Confirmación de resolución.
 
 ### Agente de Soporte
-- **Descripción:** Miembro del equipo de soporte responsable de atender y resolver tickets.
-- **Nombre(s) alternativo(s):** Agente, Soporte Técnico.
-- **Flujos de datos de entrada:** Confirmación de usuario, Ticket asignado, Reporte.
-- **Flujos de datos de salida:** Dato de usuario, Ticket gestionado, Solicitud de reporte.
-
----
+- **Descripción:** Miembro del equipo de soporte que atiende los tickets. Está precargado en el sistema.
+- **Nombres alternativos:** Agente.
+- **Flujos de entrada:** Tickets asignados, Reporte.
+- **Flujos de salida:** DNI del agente, Actualización de estado, Solicitud de reporte.
 
 ## 2. Procesos
 
-### 0.0 Sistema de Gestión de Tickets de Soporte
-- **Descripción:** Proceso central de alto nivel que representa el límite del sistema informático y su interacción con el exterior.
+### 0 Sistema de Gestión de Tickets de Soporte
+- **Descripción:** Proceso único del diagrama de contexto; representa el límite del sistema.
 
-### 1.0 GESTIONAR USUARIO
-- **Descripción:** Recibe los datos del formulario, valida que el DNI sea único en el sistema y crea el usuario sin contraseña.
+### 1 Registrar ticket
+- **Descripción:** Valida los datos del ticket, elige un agente al azar de D1, guarda el ticket en D2 con estado *Asignado* y fecha de inicio, y devuelve el comprobante.
+- **Entradas:** Datos del ticket, Agentes disponibles.
+- **Salidas:** Nuevo ticket, Comprobante de ticket.
 
-### 2.0 GESTIONAR TICKET
-- **Descripción:** Permite crear un ticket con ID único y estado Abierto, cambiar estados, asignar agentes y gestionar los comentarios.
+### 2 Consultar tickets
+- **Descripción:** Con el DNI de un cliente devuelve sus tickets; con el DNI de un agente verifica que exista y devuelve sus tickets asignados.
+- **Entradas:** DNI del cliente, DNI del agente, Datos del agente, Datos de tickets.
+- **Salidas:** Tickets del cliente, Tickets asignados.
 
-### 3.0 GENERAR REPORTE
-- **Descripción:** Consulta la base de datos para calcular métricas operativas como totales, estados y categorías.
+### 3 Actualizar estado
+- **Descripción:** Guarda el nuevo estado que informa el agente (*En proceso*, *En revisión*) o el cliente (*Cerrado* o vuelta a *En proceso*). Si el estado es *Cerrado*, registra la fecha de finalización.
+- **Entradas:** Actualización de estado, Confirmación de resolución.
+- **Salidas:** Ticket actualizado.
 
----
+### 4 Generar reportes
+- **Descripción:** Calcula la frecuencia por categoría, el tiempo promedio de resolución y el top de categorías a partir de D2.
+- **Entradas:** Solicitud de reporte, Datos para reportes.
+- **Salidas:** Reporte.
 
-## 3. Almacenamientos de Datos
+## 3. Almacenamientos
 
-### D1 USUARIOS
-- **Descripción:** Repositorio central que almacena las cuentas de todos los clientes y agentes del sistema.
-- **Nombre(s) alternativo(s):** Tabla Usuarios, Base de Cuentas.
-- **Atributos:** Registro_Usuario.
-- **Volumen y frecuencia:** Estimado: Consultas altas diarias (por validación de acceso mediante DNI) y escrituras moderadas (nuevos registros).
+### D1 Agentes
+- **Descripción:** Agentes de soporte habilitados para recibir tickets. Se cargan al crear la base; el sistema solo los lee.
+- **Nombres alternativos:** Tabla `agente`.
+- **Registro:** Registro_Agente.
+- **Volumen y frecuencia:** Pocos registros; se leen en cada ticket nuevo y en cada consulta de un agente.
 
-### D2 TICKETS
-- **Descripción:** Repositorio principal donde se guardan todas las solicitudes de soporte y sus estados actuales.
-- **Nombre(s) alternativo(s):** Tabla Tickets.
-- **Atributos:** Registro_Ticket.
-- **Volumen y frecuencia:** Estimado: Alta frecuencia de lectura y escritura por actualizaciones en tiempo real y búsquedas.
-
-### D3 EVENTOS TICKET
-- **Descripción:** Historial de todas las interacciones, comentarios y reasignaciones vinculadas a un ticket específico.
-- **Nombre(s) alternativo(s):** Tabla Comentarios, Historial.
-- **Atributos:** Registro_Evento.
-- **Volumen y frecuencia:** Estimado: Muy alta frecuencia de escritura (inserción de comentarios y estados).
-
----
-
-## 4. Flujos de Datos
-
-### Dato de usuario
-- **Descripción:** Envío de información para crear una cuenta o DNI para identificarse en el sistema.
-- **Nombre(s) alternativo(s):** Datos de Login/Registro.
-- **Origen de los datos:** Cliente, Agente de Soporte.
-- **Destino de los datos:** 1.0 GESTIONAR USUARIO (y 0.0).
-- **Registro:** Registro_Acceso_Usuario.
-- **Volumen y frecuencia:** Alto, cada vez que un usuario ingresa al sistema.
-
-### Confirmación de usuario
-- **Descripción:** Mensaje de éxito o error al intentar crear un usuario (ej. "DNI ya registrado").
-- **Nombre(s) alternativo(s):** Respuesta de registro.
-- **Origen de los datos:** 1.0 GESTIONAR USUARIO (y 0.0).
-- **Destino de los datos:** Cliente, Agente de Soporte.
-- **Registro:** Mensaje del sistema.
-- **Volumen y frecuencia:** Moderado.
-
-### Solicitud de ticket
-- **Descripción:** Petición inicial del cliente para reportar un problema.
-- **Nombre(s) alternativo(s):** Formulario Nuevo Ticket.
-- **Origen de los datos:** Cliente.
-- **Destino de los datos:** 2.0 GESTIONAR TICKET (y 0.0).
-- **Registro:** Registro_Solicitud_Ticket.
-- **Volumen y frecuencia:** Variable según demanda de clientes.
-
-### Respuesta de ticket
-- **Descripción:** Devolución visual hacia el cliente mostrando sus tickets o la confirmación del nuevo ticket.
-- **Nombre(s) alternativo(s):** Vista de Ticket.
-- **Origen de los datos:** 2.0 GESTIONAR TICKET (y 0.0).
-- **Destino de los datos:** Cliente.
-- **Registro:** Registro_Ticket, Registro_Evento.
-- **Volumen y frecuencia:** Alto.
-
-### Ticket asignado
-- **Descripción:** Notificación y despliegue del listado de tickets correspondientes al DNI de un agente.
-- **Nombre(s) alternativo(s):** Mis Tickets (Agente).
-- **Origen de los datos:** 2.0 GESTIONAR TICKET (y 0.0).
-- **Destino de los datos:** Agente de Soporte.
+### D2 Tickets
+- **Descripción:** Todos los tickets con su agente, estado y fechas.
+- **Nombres alternativos:** Tabla `ticket`.
 - **Registro:** Registro_Ticket.
-- **Volumen y frecuencia:** Alto.
+- **Volumen y frecuencia:** Crece con cada pedido. Lectura y escritura frecuentes.
 
-### Ticket gestionado
-- **Descripción:** Acciones del agente sobre un ticket (cambio de estado, asignación manual o comentario).
-- **Nombre(s) alternativo(s):** Actualización de Ticket.
-- **Origen de los datos:** Agente de Soporte.
-- **Destino de los datos:** 2.0 GESTIONAR TICKET (y 0.0).
-- **Registro:** Registro_Actualizacion_Ticket, Registro_Evento.
-- **Volumen y frecuencia:** Alto.
+## 4. Flujos de datos
 
-### Solicitud de reporte
-- **Descripción:** Petición del agente para visualizar las métricas del sistema.
-- **Nombre(s) alternativo(s):** Cargar Dashboard.
-- **Origen de los datos:** Agente de Soporte.
-- **Destino de los datos:** 3.0 GENERAR REPORTE (y 0.0).
-- **Registro:** Petición de lectura.
-- **Volumen y frecuencia:** Bajo a moderado.
+| Flujo | Descripción | Origen | Destino | Composición |
+|---|---|---|---|---|
+| Datos del ticket | Pedido de soporte del cliente | Cliente | 1 Registrar ticket | DNI cliente + Categoría + Descripción |
+| Comprobante de ticket | Confirmación del ticket creado | 1 Registrar ticket | Cliente | Registro_Ticket |
+| Agentes disponibles | Lista de agentes para elegir uno | D1 Agentes | 1 Registrar ticket | {Registro_Agente} |
+| Nuevo ticket | Alta del ticket | 1 Registrar ticket | D2 Tickets | Registro_Ticket |
+| DNI del cliente | Identificación para consultar | Cliente | 2 Consultar tickets | DNI cliente |
+| Tickets del cliente | Tickets reportados por ese DNI | 2 Consultar tickets | Cliente | {Registro_Ticket} |
+| DNI del agente | Identificación para consultar | Agente | 2 Consultar tickets | DNI agente + [Estado] |
+| Datos del agente | Verifica que el DNI sea de un agente | D1 Agentes | 2 Consultar tickets | Registro_Agente |
+| Datos de tickets | Tickets filtrados por DNI | D2 Tickets | 2 Consultar tickets | {Registro_Ticket} |
+| Tickets asignados | Bandeja de trabajo del agente | 2 Consultar tickets | Agente | {Registro_Ticket} |
+| Actualización de estado | Avance informado por el agente | Agente | 3 Actualizar estado | ID ticket + Estado |
+| Confirmación de resolución | El cliente cierra o reabre el ticket | Cliente | 3 Actualizar estado | ID ticket + Estado |
+| Ticket actualizado | Nuevo estado y, si corresponde, fecha de finalización | 3 Actualizar estado | D2 Tickets | ID ticket + Estado + [Fecha finalización] |
+| Solicitud de reporte | Pedido de un reporte | Agente | 4 Generar reportes | Tipo de reporte + [Categoría] + [Límite] |
+| Datos para reportes | Lectura de tickets para calcular | D2 Tickets | 4 Generar reportes | {Categoría + Estado + Fecha inicio + Fecha finalización} |
+| Reporte | Resultado calculado | 4 Generar reportes | Agente | Registro_Reporte |
 
-### Reporte
-- **Descripción:** Devolución de los indicadores (totales, por estado y top categorías).
-- **Nombre(s) alternativo(s):** Estadísticas.
-- **Origen de los datos:** 3.0 GENERAR REPORTE (y 0.0).
-- **Destino de los datos:** Agente de Soporte.
-- **Registro:** Registro_Reporte.
-- **Volumen y frecuencia:** Bajo a moderado.
-
-### Registro de usuario
-- **Descripción:** Inserción de una nueva cuenta en la base de datos.
-- **Nombre(s) alternativo(s):** Insert Usuario.
-- **Origen de los datos:** 1.0 GESTIONAR USUARIO.
-- **Destino de los datos:** D1 USUARIOS.
-- **Registro:** Registro_Usuario.
-- **Volumen y frecuencia:** Bajo a moderado (solo altas nuevas).
-
-### Validación de usuario
-- **Descripción:** Consulta a la base de datos para verificar si un DNI existe, su rol, o si está duplicado.
-- **Nombre(s) alternativo(s):** Check DNI.
-- **Origen de los datos:** D1 USUARIOS.
-- **Destino de los datos:** 2.0 GESTIONAR TICKET.
-- **Registro:** DNI, Rol.
-- **Volumen y frecuencia:** Muy alto.
-
-### Nuevo evento
-- **Descripción:** Grabación de un nuevo comentario o registro de cambio de estado.
-- **Nombre(s) alternativo(s):** Insert Comentario.
-- **Origen de los datos:** 2.0 GESTIONAR TICKET.
-- **Destino de los datos:** D3 EVENTOS TICKET.
-- **Registro:** Registro_Evento.
-- **Volumen y frecuencia:** Alto.
-
-### Historial de eventos
-- **Descripción:** Extracción cronológica de los comentarios para mostrar en los detalles del ticket.
-- **Nombre(s) alternativo(s):** Leer Comentarios.
-- **Origen de los datos:** D3 EVENTOS TICKET.
-- **Destino de los datos:** 2.0 GESTIONAR TICKET.
-- **Registro:** Registro_Evento.
-- **Volumen y frecuencia:** Alto.
-
-### Ticket actualizado
-- **Descripción:** Modificación de la tabla principal de tickets (nuevo ticket, cambio de estado, o asignación).
-- **Nombre(s) alternativo(s):** Update/Insert Ticket.
-- **Origen de los datos:** 2.0 GESTIONAR TICKET.
-- **Destino de los datos:** D2 TICKETS.
-- **Registro:** Registro_Ticket.
-- **Volumen y frecuencia:** Alto.
-
-### Datos de ticket
-- **Descripción:** Lectura de la información de uno o varios tickets específicos.
-- **Nombre(s) alternativo(s):** Leer Ticket.
-- **Origen de los datos:** D2 TICKETS.
-- **Destino de los datos:** 2.0 GESTIONAR TICKET.
-- **Registro:** Registro_Ticket.
-- **Volumen y frecuencia:** Alto.
-
-### Datos de tickets
-- **Descripción:** Lectura masiva de todos tickets para calcular reportes.
-- **Nombre(s) alternativo(s):** Volcado de datos estadísticos.
-- **Origen de los datos:** D2 TICKETS.
-- **Destino de los datos:** 3.0 GENERAR REPORTE.
-- **Registro:** Registro_Ticket (campos Estado, Categoría).
-- **Volumen y frecuencia:** Moderado.
-
----
+Notación: `+` = y; `{ }` = se repite; `[ ]` = opcional.
 
 ## 5. Registros
 
-### Registro_Usuario
-- **Definición o descripción:** Estructura que almacena los datos personales de un usuario.
-- **Nombre(s) alternativo(s):** Fila Usuario.
-- **Atributos:** Nombre completo, DNI, Email, Rol.
+### Registro_Agente
+- **Descripción:** Una fila de la tabla `agente`.
+- **Composición:** DNI agente + Nombre.
 
 ### Registro_Ticket
-- **Definición o descripción:** Estructura que almacena la información principal de un reclamo.
-- **Nombre(s) alternativo(s):** Fila Ticket.
-- **Atributos:** ID, Asunto, Descripción, Categoría, Estado, Fecha creación, Última actualización, Agente asignado.
-
-### Registro_Evento
-- **Definición o descripción:** Estructura que contiene una interacción dentro de un ticket.
-- **Nombre(s) alternativo(s):** Fila Comentario.
-- **Atributos:** ID Ticket, Autor, Timestamp, Contenido.
+- **Descripción:** Una fila de la tabla `ticket`.
+- **Composición:** ID ticket + DNI agente + DNI cliente + Categoría + Descripción + Fecha inicio + [Fecha finalización] + Estado.
 
 ### Registro_Reporte
-- **Definición o descripción:** Estructura de salida generada por las métricas estadísticas.
-- **Nombre(s) alternativo(s):** Salida Dashboard.
-- **Atributos:** Cantidad total de tickets, tickets agrupados por estado, top 5 categorías más frecuentes.
+- **Descripción:** Resultado de un reporte. Según el tipo:
+  - Frecuencia por categoría: {Categoría + Cantidad}.
+  - Tiempo promedio de resolución: [Categoría] + Tickets cerrados + Promedio en horas.
+  - Top de categorías: {Categoría + Cantidad}, ordenado de mayor a menor.
 
-### Registro_Acceso_Usuario
-- **Definición o descripción:** Estructura temporal usada para la creación o búsqueda.
-- **Nombre(s) alternativo(s):** Payload Login/Registro.
-- **Atributos:** DNI, (Nombre completo, Email, Rol si es registro nuevo).
+## 6. Elementos de datos
 
----
-
-## 6. Elementos de Datos
-
-### DNI
-- **Alias:** Documento de Identidad.
-- **Tipo y longitud:** Alfanumérico o Numérico (según implementación), longitud estándar.
-- **Valor por defecto:** N/A.
-- **Valores aceptados:** Único en tabla usuarios (RNF-003).
-- **Procedencia de los datos:** Entidades (Cliente, Agente).
-- **Usuario(s) responsables:** Cliente, Agente.
-- **Descripción y comentarios:** Identificador principal y único; no requiere contraseña.
-
-### Nombre completo
-- **Alias:** Nombre.
-- **Tipo y longitud:** Texto, longitud variable.
-- **Valor por defecto:** N/A.
-- **Valores aceptados:** Texto.
-- **Procedencia de los datos:** Entidades al registrarse.
-- **Usuario(s) responsables:** Cliente, Agente.
-- **Descripción y comentarios:** Campo obligatorio para crear usuario.
-
-### Email
-- **Alias:** Correo electrónico.
-- **Tipo y longitud:** Texto.
-- **Valor por defecto:** N/A.
-- **Valores aceptados:** Formato válido de correo (ej. arroba y dominio).
-- **Procedencia de los datos:** Entidades al registrarse.
-- **Usuario(s) responsables:** Cliente, Agente.
-- **Descripción y comentarios:** Validado en el requerimiento US-001.
-
-### Rol
-- **Alias:** Tipo de Usuario.
-- **Tipo y longitud:** Texto o Booleano.
-- **Valor por defecto:** N/A.
-- **Valores aceptados:** Cliente, Agente.
-- **Procedencia de los datos:** Formulario de registro (Dropdown).
-- **Usuario(s) responsables:** Cliente, Agente.
-- **Descripción y comentarios:** Define los permisos de visualización de tickets.
-
-### ID Ticket
-- **Alias:** Número de Ticket.
-- **Tipo y longitud:** Alfanumérico o Entero.
-- **Valor por defecto:** Autogenerado.
-- **Valores aceptados:** Valores únicos.
-- **Procedencia de los datos:** Sistema (Proceso 2.0).
-- **Usuario(s) responsables:** Sistema.
-- **Descripción y comentarios:** Generado automáticamente al crear (ej. #TK-001234).
-
-### Asunto
-- **Alias:** Título.
-- **Tipo y longitud:** Texto, máximo 100 caracteres.
-- **Valor por defecto:** N/A.
-- **Valores aceptados:** Texto.
-- **Procedencia de los datos:** Cliente.
-- **Usuario(s) responsables:** Cliente.
-- **Descripción y comentarios:** Obligatorio para reportar un problema.
-
-### Descripción
-- **Alias:** Detalle del problema.
-- **Tipo y longitud:** Texto, máximo 2000 caracteres.
-- **Valor por defecto:** N/A.
-- **Valores aceptados:** Texto.
-- **Procedencia de los datos:** Cliente.
-- **Usuario(s) responsables:** Cliente.
-- **Descripción y comentarios:** Campo obligatorio; admite explicación detallada.
-
-### Categoría
-- **Alias:** N/A.
-- **Tipo y longitud:** Texto.
-- **Valor por defecto:** N/A.
-- **Valores aceptados:** Selecciones del Dropdown.
-- **Procedencia de los datos:** Cliente.
-- **Usuario(s) responsables:** Cliente.
-- **Descripción y comentarios:** Usado para agrupación y estadísticas (Top 5).
-
-### Estado_Ticket
-- **Alias:** Estado.
-- **Tipo y longitud:** Texto.
-- **Valor por defecto:** Abierto.
-- **Valores aceptados:** Abierto, En Progreso, Esperando al Cliente, Resuelto, Cerrado.
-- **Procedencia de los datos:** Sistema (creación) o Agente (actualización).
-- **Usuario(s) responsables:** Agente, Sistema.
-- **Descripción y comentarios:** Reflejado en tiempo real en la interfaz.
-
-### Agente asignado
-- **Alias:** Asignado a.
-- **Tipo y longitud:** Identificador (DNI o ID de agente).
-- **Valor por defecto:** Nulo o auto-asignado.
-- **Valores aceptados:** Agentes existentes en D1 USUARIOS.
-- **Procedencia de los datos:** Agente de Soporte (Asignación manual).
-- **Usuario(s) responsables:** Agente.
-- **Descripción y comentarios:** Define en el listado de qué agente aparece el ticket.
-
-### Autor Comentario
-- **Alias:** Quién escribió.
-- **Tipo y longitud:** Texto (Nombre) o Identificador.
-- **Valor por defecto:** N/A.
-- **Valores aceptados:** Identidad validada.
-- **Procedencia de los datos:** Entidades (Cliente, Agente).
-- **Usuario(s) responsables:** Cliente, Agente.
-- **Descripción y comentarios:** Se registra automáticamente al enviar.
-
-### Contenido Comentario
-- **Alias:** Qué escribió.
-- **Tipo y longitud:** Texto.
-- **Valor por defecto:** N/A.
-- **Valores aceptados:** Texto (no puede estar vacío).
-- **Procedencia de los datos:** Entidades (Cliente, Agente).
-- **Usuario(s) responsables:** Cliente, Agente.
-- **Descripción y comentarios:** Aparece inmediatamente en el historial.
-
-### Timestamp
-- **Alias:** Cuándo, Fecha/hora.
-- **Tipo y longitud:** Fecha y Hora (Datetime).
-- **Valor por defecto:** Tiempo actual del sistema.
-- **Valores aceptados:** Formato válido de tiempo.
-- **Procedencia de los datos:** Sistema.
-- **Usuario(s) responsables:** Sistema.
-- **Descripción y comentarios:** Se graba automáticamente en tickets y comentarios.
+| Elemento | Tipo y longitud | Valores aceptados | Valor por defecto | Origen | Descripción |
+|---|---|---|---|---|---|
+| ID ticket | Entero | Único, autoincremental | Generado | Sistema | Número de ticket |
+| DNI cliente | Texto, 7-8 caracteres | Solo dígitos | — | Cliente | Identifica a quién afecta el problema |
+| DNI agente | Texto, 7-8 caracteres | DNI existente en D1 | Agente elegido al azar | Sistema | Agente asignado (FK) |
+| Nombre | Texto, hasta 100 | Texto no vacío | — | Carga inicial | Nombre del agente |
+| Categoría | Texto, hasta 20 | `conexion`, `facturacion`, `consulta_general`, `otro` | — | Cliente | Tipo de problema; base de los reportes |
+| Descripción | Texto | No vacío | — | Cliente | Qué ocurrió |
+| Fecha inicio | Fecha y hora | ISO 8601 | Fecha y hora actuales | Sistema | Cuándo se reportó |
+| Fecha finalización | Fecha y hora | ISO 8601 o vacío | Vacío | Sistema | Cuándo el cliente cerró el ticket |
+| Estado | Texto, hasta 15 | `asignado`, `en_proceso`, `en_revision`, `cerrado` | `asignado` | Sistema / Agente / Cliente | Etapa del ciclo de vida |
+| Cantidad | Entero | ≥ 0 | — | Sistema | Tickets de una categoría |
+| Tickets cerrados | Entero | ≥ 0 | — | Sistema | Tickets considerados en el promedio |
+| Promedio en horas | Decimal | ≥ 0 o vacío | — | Sistema | Tiempo promedio de resolución |
+| Límite | Entero | 1 a 4 | 3 | Agente | Cantidad de categorías del top |

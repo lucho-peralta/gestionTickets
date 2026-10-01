@@ -8,7 +8,7 @@ categoria
 descripcion
 fecha_inicio
 fecha_finalizacion
-estado (asignado - en proceso - pendiente confirmacion - cerrado)
+estado (asignado - en proceso - revision - cerrado)
 
 TABLA AGENTE:
 dni PK
@@ -21,12 +21,11 @@ AGENTE->TICKET (1;N)
 
 ACLARACIONES:
 El agente modifica el estado a pendiente de confirmacion cuando realizo su trabajo.
-El cliente modifica descripcion informando si su tiquet fue resuelto.
-Agente modifica el estado de pendiente confirmacion a cerrado cuando recibe la confirmacion del cliente.
+El cliente modifica el estado cuando su tiquet fue resuelto.
 
 ENDPOINTS API:
 
-Cliente: crear ticket, consulta ticket (usando DNI), modificar descripcion de ticket.
+Cliente: crear ticket, consulta ticket (usando DNI), modificar estado de ticket.
 
 Sistema: Asigna agente, averigua frecuencia de categoria, tiempo promedio de resolucion, top categorias.
 

@@ -1,3 +1,5 @@
+> **Documento de referencia (cátedra).** Enunciado original del proyecto; no es un entregable del equipo. La versión del equipo está en `documentacion/01_enunciado.md`.
+
 # 4. Sistema de Gestión de Tickets de Soporte
 
 Se requiere un sistema que permita organizar y dar seguimiento a los pedidos de ayuda, reclamos o consultas que realizan los usuarios de un servicio o producto. Cada vez que una persona tiene un problema, debe poder informarlo de manera clara para que el equipo encargado pueda atenderlo y resolverlo.

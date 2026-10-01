@@ -1,73 +1,95 @@
 # Diseño de la Arquitectura General
 
-Alcance: bloques del sistema y comunicación entre ellos. 
+Responsable: Luciano
 
-## Diagrama de Arquitectura
+Alcance: bloques del sistema y cómo se comunican. El detalle de los endpoints está en `19_rest_api.md`, el de las tablas en `22_diseno_datos_erd.md` y las tecnologías concretas en `20_herramientas_frameworks_librerias.md`.
+
+## Diagrama de arquitectura
 
 ```mermaid
 architecture-beta
-    group frontend(cloud)[Frontend]
-    group backend(server)[Backend]
+    group frontend(cloud)[Front-end]
+    group backend(server)[Back-end]
     group persistencia(database)[Persistencia]
 
     service app(internet)[Aplicacion Web] in frontend
-    service controlador(server)[Controlador] in backend
-    service servicio(server)[Servicio] in backend
-    service dominio(server)[Dominio_Modelos] in backend
-    service repositorio(disk)[Repositorio] in backend
+    service controlador(server)[Controladores] in backend
+    service servicio(server)[Servicios] in backend
+    service dominio(server)[Dominio] in backend
+    service repositorio(disk)[Repositorios] in backend
     service bd(database)[Base de Datos] in persistencia
 
     app:R -- L:controlador
     controlador:R -- L:servicio
-    servicio:R -- L:dominio
+    servicio:B -- T:dominio
     servicio:R -- L:repositorio
     repositorio:R -- L:bd
 ```
 
+Cada bloque corre en su propio contenedor Docker (front-end, back-end y base de datos) y se levantan juntos con Docker Compose.
+
 ## Bloques
 
-**Frontend.** Aplicación web independiente. Se comunica con el Backend exclusivamente vía HTTP/JSON. No accede a la Base de Datos.
+**Front-end.** Aplicación web con tres secciones accesibles desde la pantalla principal, sin login: *Soy cliente* (crear ticket, mis tickets, confirmar resolución), *Soy agente* (tickets asignados, cambiar estado) y *Reportes*. Se comunica con el back-end solo por HTTP/JSON; nunca accede a la base de datos.
 
-**Controlador.** Recibe la petición HTTP. Valida su forma (presencia y tipo de los campos requeridos por el endpoint). Delega en el Servicio correspondiente. Arma la respuesta HTTP (código de estado + cuerpo).
+**Controladores.** Reciben la petición HTTP, validan su forma (campos obligatorios, tipos, valores de las listas fijas), llaman al servicio correspondiente y arman la respuesta HTTP.
 
-**Servicio.** Un Servicio por recurso (`UsuarioService`, `TicketService`, `ComentarioService`, `ReporteService`). Orquesta el caso de uso: consulta al Repositorio a través de su interfaz, aplica las reglas de negocio que dependen del estado global del sistema, y delega en el Dominio las reglas propias de una entidad. Lanza una excepción de aplicación cuando una regla no se cumple.
+| Controlador | Endpoints |
+|---|---|
+| `TicketControlador` | `POST /tickets`, `GET /tickets/{id}`, `PATCH /tickets/{id}/estado` |
+| `ClienteControlador` | `GET /clientes/{dni}/tickets` |
+| `AgenteControlador` | `GET /agentes/{dni}/tickets` |
+| `ReporteControlador` | `GET /reportes/frecuencia-categorias`, `GET /reportes/tiempo-promedio-resolucion`, `GET /reportes/top-categorias` |
 
-**Dominio / Modelos.** Entidades: Usuario, Ticket, Comentario, Categoría. Cada entidad contiene las reglas que le son propias (ejemplo: `Ticket.puedeCambiarEstadoA(nuevoEstado)` determina las transiciones de estado válidas).
+**Servicios.** Orquestan cada caso de uso y aplican las reglas de negocio.
 
-**Repositorio.** Un Repositorio por entidad, expuesto como interfaz (`UsuarioRepositorio`, `TicketRepositorio`, `ComentarioRepositorio`, `CategoriaRepositorio`). Operaciones: `existePorDni`, `buscarPorId`, `buscarPorDni`, `listar`, `guardar`, entre otras según el recurso. Devuelve y recibe instancias de Dominio, nunca filas crudas de la base. La implementación concreta de cada interfaz se define en el punto 4.
+| Servicio | Responsabilidades |
+|---|---|
+| `TicketService` | Crear ticket (pide un agente a `AsignacionService`, fija estado `asignado` y `fecha_inicio`), consultar por cliente y por agente, cambiar estado (si el nuevo estado es `cerrado`, fija `fecha_finalizacion`). |
+| `AsignacionService` | Elegir un agente al azar entre los cargados; si no hay, lanza `SinAgentesDisponibles`. |
+| `ReporteService` | Frecuencia por categoría, tiempo promedio de resolución y top de categorías. |
 
-**Base de Datos.** Persiste usuarios, tickets, comentarios y categorías. Acceso exclusivo del Repositorio.
+**Dominio.** Dos entidades:
+
+- `Agente` (`dni`, `nombre`).
+- `Ticket` (`id`, `dniCliente`, `dniAgente`, `categoria`, `descripcion`, `fechaInicio`, `fechaFinalizacion`, `estado`). Regla propia: `cambiarEstado(nuevo)` actualiza el estado y, si es `cerrado`, registra la fecha de finalización.
+
+Las listas fijas (`Categoria`, `Estado`) se definen como constantes del dominio.
+
+**Repositorios.** Uno por entidad, expuestos como interfaz. Reciben y devuelven objetos del dominio, nunca filas crudas.
+
+| Repositorio | Operaciones |
+|---|---|
+| `AgenteRepositorio` | `listar()`, `buscarPorDni(dni)` |
+| `TicketRepositorio` | `guardar(ticket)`, `buscarPorId(id)`, `buscarPorCliente(dni)`, `buscarPorAgente(dni, estado?)`, `actualizarEstado(ticket)`, `contarPorCategoria()`, `promedioResolucion(categoria?)` |
+
+**Base de datos.** Dos tablas: `agente` y `ticket`. Solo la acceden los repositorios.
 
 ## Validación
 
-- **Validación de forma**: Controlador. Presencia y tipo de los campos del request.
-- **Validación de negocio**: Servicio y Dominio. Reglas que requieren el estado actual del sistema (unicidad de DNI, transición de estado válida, existencia del recurso).
+| Tipo | Dónde | Ejemplos |
+|---|---|---|
+| De forma | Controlador | Campos obligatorios, DNI de 7 u 8 dígitos, categoría y estado dentro de sus listas |
+| De negocio | Servicio | Existe el ticket, existe el agente, hay agentes para asignar |
 
-El Controlador arma un objeto de entrada explícito para cada caso de uso a partir del body del request; no pasa el body crudo al Servicio ni al Dominio.
+Siguiendo el criterio de validaciones mínimas del alcance, no se validan las transiciones entre estados.
 
 ## Manejo de errores
 
-| Tipo | Se origina en | Clase de código HTTP |
+| Error | Se origina en | Código HTTP |
 |---|---|---|
-| Error de formato | Controlador | 4xx |
-| Conflicto de negocio (DNI duplicado, transición de estado inválida) | Servicio / Dominio | 4xx |
-| Recurso inexistente | Servicio | 4xx |
-| Error no previsto | Cualquier capa | 5xx |
+| Datos inválidos | Controlador | 400 |
+| Ticket o agente inexistente | Servicio | 404 |
+| No hay agentes disponibles | `AsignacionService` | 409 |
+| Error no previsto | Cualquier capa | 500 |
 
-Un manejador central captura las excepciones de aplicación y las traduce a la respuesta HTTP. El formato del cuerpo de error se define en el punto 2 (API). Ninguna capa resuelve un error de negocio devolviendo `null` o un booleano: siempre se lanza una excepción de aplicación.
+Un manejador central captura las excepciones y las traduce a la respuesta `{ "message": "..." }` definida en `19_rest_api.md`.
 
-## Flujo de una petición
+## Flujo de una petición (ejemplo: crear ticket)
 
-1. Controlador: recibe la petición, valida forma. Si falla, responde con error de formato.
-2. Controlador: delega en el método del Servicio.
-3. Servicio: consulta al Repositorio (interfaz) los datos que necesita.
-4. Servicio: aplica reglas de negocio — las propias de una entidad vía Dominio, las de estado global directamente.
-5. Si una regla falla: se lanza una excepción de aplicación, que llega sin intervención hasta el manejador central.
-6. Si las reglas se cumplen: el Servicio construye o actualiza la entidad de Dominio y llama al Repositorio para persistir.
-7. Controlador: recibe el resultado del Servicio, arma la respuesta HTTP.
-
-
-
-
-
-
+1. `TicketControlador` recibe `POST /tickets` y valida que vengan DNI, categoría válida y descripción.
+2. Llama a `TicketService.crear(datos)`.
+3. `TicketService` pide un agente a `AsignacionService`, que consulta `AgenteRepositorio.listar()` y elige uno al azar.
+4. `TicketService` crea el `Ticket` con estado `asignado` y `fechaInicio` = ahora.
+5. `TicketRepositorio.guardar(ticket)` lo inserta y devuelve el ticket con su `id`.
+6. El controlador responde `201` con el ticket creado.

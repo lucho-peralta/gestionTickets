@@ -1,82 +1,100 @@
-# Alcance Funcional y No Funcional (Requerimientos)
+# Requerimientos Funcionales y No Funcionales
+
+Responsable: Luciano
+
+Valores de referencia usados en todo el documento:
+
+- **Categorías** (lista fija): `conexion` (Conexión), `facturacion` (Facturación), `consulta_general` (Consulta general), `otro` (Otro).
+- **Estados**: `asignado` (Asignado), `en_proceso` (En proceso), `en_revision` (En revisión — pendiente de confirmación del cliente), `cerrado` (Cerrado).
 
 ## Requerimientos Funcionales (RF)
 
-### RF-001: Crear Usuario
+### Cliente
 
-- Sistema permite crear clientes y agentes
-- Datos: nombre completo, DNI, email, rol (Cliente o Agente)
-- Botón "Crear Usuario" accesible en interfaz principal
-- Valida que DNI sea único en el sistema
-- No requiere contraseña
+#### RF-01: Crear ticket
 
-### RF-002: Buscar Tickets por DNI
+- El cliente completa **DNI**, **categoría** (de la lista fija) y **descripción** del problema.
+- Los tres campos son obligatorios.
+- El sistema genera el **número de ticket** automáticamente.
+- El sistema registra la **fecha de inicio** (fecha y hora actuales).
+- El sistema asigna un agente (RF-02) y deja el ticket en estado **Asignado**.
+- El sistema muestra el número de ticket y el agente asignado.
 
-- Usuario ingresa su DNI en pantalla de búsqueda
-- Sistema retorna sus tickets
-- Si es Cliente: muestra tickets creados por ese DNI
-- Si es Agente: muestra tickets asignados a ese DNI
+#### RF-03: Consultar tickets del cliente
 
-### RF-003: Crear Ticket
+- El cliente ingresa su DNI.
+- El sistema muestra todos los tickets cuyo `dni_cliente` coincide, del más reciente al más antiguo.
+- De cada ticket se muestra: número, categoría, descripción, estado, agente asignado, fecha de inicio y fecha de finalización (si está cerrado).
+- Si no tiene tickets, el sistema informa "No hay tickets para este DNI".
 
-- Cliente puede generar ticket completando:
-  - Asunto (título del problema)
-  - Descripción (detalle del problema)
-  - Categoría (seleccionar de dropdown)
-- Sistema genera número único automático
-- Estado inicial: Abierto
-- Puede adjuntar archivos
+#### RF-04: Confirmar resolución (cerrar ticket)
 
-### RF-004: Asignar Ticket
+- Solo aplica a tickets en estado **En revisión**.
+- Si el problema fue resuelto, el cliente cambia el estado a **Cerrado** y el sistema registra la **fecha de finalización**.
+- Si el problema sigue, el cliente puede devolver el ticket a **En proceso** para que el agente siga trabajando.
 
-- Agente puede asignar manualmente un ticket a otro agente
-- Sistema registra: quién lo asignó, a quién, cuándo
+### Agente de soporte
 
-### RF-005: Actualizar Estado
+#### RF-05: Consultar tickets asignados
 
-- Agente puede cambiar el estado de un ticket
-- Estados disponibles: Abierto, En Progreso, Esperando al Cliente, Resuelto, Cerrado
-- Cambio reflejado en tiempo real
+- El agente ingresa su DNI.
+- El sistema muestra los tickets cuyo `dni_agente` coincide, del más antiguo al más reciente (para atender primero los que llevan más tiempo).
+- Permite filtrar por estado.
+- Si el DNI no corresponde a ningún agente, el sistema informa "Agente no encontrado".
 
-### RF-006: Ver Detalles de Ticket
+#### RF-06: Actualizar estado
 
-- Mostrar: ID, asunto, descripción, categoría, estado, fecha, agente asignado
-- Mostrar historial de comentarios con: quién escribió, cuándo, qué escribió
+- El agente cambia el estado de uno de sus tickets.
+- Camino esperado: **Asignado → En proceso → En revisión**.
+- Cuando termina su trabajo, el agente pasa el ticket a **En revisión** (pendiente de confirmación del cliente). El agente **no** cierra el ticket.
 
-### RF-007: Comentar en Ticket
+### Sistema (procesos automáticos)
 
-- Cliente y agente pueden dejar comentarios
-- Se registra: autor, timestamp, contenido
-- Aparece inmediatamente en historial
+#### RF-02: Asignar agente automáticamente
 
-### RF-008: Ver Listado de Tickets
+- Al crearse un ticket, el sistema elige **al azar** un agente entre los cargados en la base.
+- Cada ticket tiene exactamente un agente; no hay reasignación.
+- Si no hay agentes cargados, el ticket no se crea y el sistema informa "No hay agentes disponibles".
 
-- Muestra tabla con: ID, asunto, categoría, estado, fecha creación, última actualización
-- Ordenado por fecha (más recientes primero)
-- Opción para filtrar por estado
+#### RF-07: Reporte — Frecuencia por categoría
 
-### RF-009: Reportes Básicos
+- Cantidad de tickets registrados en cada categoría (incluye las que tienen 0).
 
-- Ver cantidad total de tickets
-- Ver tickets por estado
-- Ver categorías más frecuentes
+#### RF-08: Reporte — Tiempo promedio de resolución
+
+- Promedio de `fecha_finalizacion − fecha_inicio` de los tickets **cerrados**, expresado en horas.
+- Opcionalmente filtrado por categoría.
+- Si no hay tickets cerrados, el promedio se informa como vacío (no como 0).
+
+#### RF-09: Reporte — Top de categorías
+
+- Las N categorías con más tickets, de mayor a menor (por defecto N = 3).
 
 ## Requerimientos No Funcionales (RNF)
 
-### RNF-001: Usabilidad
+### RNF-01: Acceso sin autenticación
 
-- Crear ticket en máximo 3 pasos/clics desde pantalla principal
-- Interfaz intuitiva para cualquier usuario
-- Mensajes de error claros y comprensibles
+- El sistema **no tiene login, logout ni contraseñas**, ni ahora ni en etapas posteriores.
+- Todos los usuarios entran directo a la interfaz principal, sin importar su rol.
+- La identificación se hace únicamente por DNI cuando la función lo requiere.
 
-### RNF-002: Rendimiento
+### RNF-02: Usabilidad
 
-- Cambios de estado reflejarse en menos de 2 segundos
-- Búsqueda de tickets responde inmediatamente
+- Crear un ticket requiere un solo formulario de tres campos.
+- Mensajes de error claros que indiquen qué campo falta o es inválido.
 
-### RNF-003: Integridad de Datos
+### RNF-03: Integridad de datos
 
-- No permitir tickets duplicados
-- Estados deben ser consistentes
-- Validación en campos obligatorios
-- DNI no puede duplicarse en tabla de usuarios
+- Campos obligatorios validados antes de guardar.
+- `categoria` y `estado` solo aceptan valores de sus listas.
+- El DNI se guarda como texto de 7 u 8 dígitos.
+- Todo ticket tiene un agente asignado (FK válida a `agente`).
+- `fecha_finalizacion` solo se completa cuando el ticket pasa a **Cerrado**.
+
+### RNF-04: Rendimiento
+
+- Las consultas por DNI y los cambios de estado responden en menos de 2 segundos con el volumen esperado del proyecto.
+
+### RNF-05: Portabilidad
+
+- Back-end, front-end y base de datos se ejecutan en contenedores Docker y se levantan juntos con Docker Compose.

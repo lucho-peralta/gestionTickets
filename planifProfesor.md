@@ -1,3 +1,5 @@
+> **Documento de referencia (cátedra).** Cronograma semanal del profesor; no es un entregable del equipo. El plan del equipo está en `documentacion/07_plan_de_trabajo_y_Kanban.md`.
+
 ### Semana 1 (24/08): Documentación - Análisis de Casos de Negocio
 
 * [x] Redactar un enunciado inicial del sistema.

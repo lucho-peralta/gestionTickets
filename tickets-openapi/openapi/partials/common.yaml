@@ -18,24 +18,88 @@ schemas:
     pattern: '^[0-9]{7,8}$'
     example: "30123456"
 
+  categoria:
+    description: |
+      Categoría del ticket (lista fija).
+      - conexion: problemas de conexión.
+      - facturacion: problemas o consultas de facturación.
+      - consulta_general: consultas generales.
+      - otro: cualquier otro caso.
+    type: string
+    enum:
+      - conexion
+      - facturacion
+      - consulta_general
+      - otro
+
   estado:
     description: |
-      Estado de la asignación de un ticket.
-      - asignado: el ticket tiene un agente, todavía no empezó a trabajarlo.
-      - en_proceso: el agente está trabajando en el ticket.
-      - resuelto: el problema fue resuelto.
+      Estado del ticket.
+      - asignado: estado inicial; el sistema ya asignó un agente.
+      - en_proceso: el agente está trabajando el problema.
+      - en_revision: el agente terminó; pendiente de confirmación del cliente.
+      - cerrado: el cliente confirmó la resolución (se registra fecha_finalizacion).
     type: string
     enum:
       - asignado
       - en_proceso
-      - resuelto
+      - en_revision
+      - cerrado
+
+  agente:
+    description: Agente de soporte (fila de la tabla agente).
+    type: object
+    required:
+      - dni
+      - nombre
+    properties:
+      dni:
+        $ref: "#/schemas/dni"
+      nombre:
+        type: string
+        example: María Gómez
+
+  ticket:
+    description: Ticket tal como lo devuelve la API.
+    type: object
+    required:
+      - id
+      - dni_cliente
+      - categoria
+      - descripcion
+      - estado
+      - fecha_inicio
+      - fecha_finalizacion
+      - agente
+    properties:
+      id:
+        type: integer
+        example: 1
+      dni_cliente:
+        $ref: "#/schemas/dni"
+      categoria:
+        $ref: "#/schemas/categoria"
+      descripcion:
+        type: string
+      estado:
+        $ref: "#/schemas/estado"
+      fecha_inicio:
+        description: Momento en que se reportó el ticket (lo pone el servidor).
+        type: string
+        format: date-time
+      fecha_finalizacion:
+        description: Momento en que el cliente cerró el ticket. Null mientras no esté cerrado.
+        type: string
+        format: date-time
+        nullable: true
+      agente:
+        $ref: "#/schemas/agente"
 
 # ----------------------------------------------
 # Respuestas compartidas
 # ----------------------------------------------
 
 responses:
-
 
   datos-invalidos:
     description: Los datos enviados no son válidos.
@@ -69,3 +133,14 @@ responses:
           default:
             value:
               message: "Agente No Encontrado"
+
+  sin-agentes:
+    description: No hay agentes cargados para asignar el ticket.
+    content:
+      application/json:
+        schema:
+          $ref: "#/schemas/message"
+        examples:
+          default:
+            value:
+              message: "No Hay Agentes Disponibles"

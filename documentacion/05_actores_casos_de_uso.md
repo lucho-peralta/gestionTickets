@@ -1,118 +1,244 @@
-## 3. Identificación de Actores
+# Actores, User Stories y Escenarios Gherkin
 
-### Actor 1: Cliente / Usuario Final
+Responsable: Lucas
 
-Persona que utiliza el servicio y necesita reportar problemas o hacer consultas.
+## 1. Identificación de actores
 
-**Objetivos:**
+### Actor 1: Cliente
 
-- Crear un ticket para reportar un problema
-- Ver el estado de sus tickets
-- Comunicarse con el agente
-- Identificarse por DNI
+Persona que usa el servicio y necesita reportar un problema, consulta o reclamo.
 
-**Características:**
-
-- Necesita interfaz simple
-- Accede a través de web
-
-### Actor 2: Agente de Soporte
-
-Miembro del equipo de soporte responsable de atender y resolver tickets.
-
-**Objetivos:**
-
-- Recibir asignaciones de tickets
-- Ver detalles del problema
-- Actualizar el estado
-- Comunicarse con cliente
-- Asignar tickets
-- Identificarse por DNI
-
-**Características:**
-
-- Accede a través de web
-- Múltiples tickets asignados
-
-## 4. Casos de Uso — User Stories con Criterios de Aceptación
-
-### USER STORY 1 — US-001: Crear Usuario (Cliente o Agente)
-
-> *Como usuario nuevo quiero crear una cuenta con mi DNI para poder acceder al sistema*
-
-**Descripción funcional:** Sistema muestra formulario (nombre, DNI, email, rol). Usuario completa datos y hace clic en «Crear Usuario». Valida DNI único. Si válido: usuario creado con confirmación.
-
-| Criterio | Resultado Esperado |
+| Objetivos | Características |
 |---|---|
-| Completa todos los campos correctamente | Usuario se crea exitosamente |
-| DNI ya existe | Mensaje: DNI ya registrado |
-| Email inválido | Mensaje: Email inválido |
-| Campo obligatorio vacío | Mensaje: Complete todos los campos |
-| Usuario creado | Puede buscarse por DNI inmediatamente |
+| Reportar un problema creando un ticket | Se identifica solo con su DNI |
+| Saber en qué estado están sus tickets | No está registrado en el sistema (no hay tabla de clientes) |
+| Confirmar cuando su problema fue resuelto | Accede por la interfaz web, sin login |
 
-### USER STORY 2 — US-002: Buscar Tickets por DNI
+### Actor 2: Agente de soporte
 
-> *Como usuario quiero ingresar mi DNI para ver mis tickets*
+Miembro del equipo de soporte que atiende y resuelve los tickets.
 
-**Descripción funcional:** Pantalla con campo «Ingresa tu DNI». Usuario ingresa DNI y hace clic en Buscar. Si Cliente: retorna tickets creados. Si Agente: retorna tickets asignados.
-
-| Criterio | Resultado Esperado |
+| Objetivos | Características |
 |---|---|
-| DNI existe y es Cliente | Muestra tickets creados por ese Cliente |
-| DNI existe y es Agente | Muestra tickets asignados a ese Agente |
-| DNI no existe | Mensaje: DNI no encontrado |
-| DNI sin tickets | Mensaje: No tienes tickets aún |
-| Campo vacío | Mensaje: Ingresa tu DNI |
+| Ver los tickets que tiene asignados | Está precargado en el sistema (DNI y nombre) |
+| Informar el avance cambiando el estado | Se identifica con su DNI |
+| Consultar los reportes para mejorar el servicio | Accede por la interfaz web, sin login |
 
-### USER STORY — US-003: Crear Ticket (Cliente)
+### Sistema (procesos automáticos)
 
-> *Como cliente quiero crear un ticket en 3 pasos para reportar un problema*
+No es un actor humano, pero realiza tareas por su cuenta: **asigna un agente** a cada ticket nuevo y **calcula los reportes**.
 
-Completa asunto, descripción y categoría. Sistema genera ID único, estado inicial «Abierto». Puede adjuntar archivos. Validación de campos obligatorios.
+## 2. User Stories con criterios de aceptación
 
-### USER STORY — US-004: Ver Listado de Tickets
+### US-01: Crear ticket
 
-> *Como usuario quiero ver mis tickets en una tabla para revisar su estado*
+> *Como **cliente** quiero crear un ticket con mi DNI, la categoría y la descripción del problema para que el equipo de soporte lo atienda.*
 
-Tabla con ID, asunto, categoría, estado y fecha. Ordenado por fecha (más recientes primero). Filtro por estado.
+| Criterio | Resultado esperado |
+|---|---|
+| CA-1.1 Completa DNI, categoría y descripción | Se crea el ticket y se muestra su número |
+| CA-1.2 El ticket se crea | Queda en estado **Asignado**, con agente y fecha de inicio |
+| CA-1.3 Falta algún campo | Mensaje: "Complete todos los campos" |
+| CA-1.4 Categoría fuera de la lista | Mensaje: "Categoría inválida" |
 
-### USER STORY — US-005: Ver Detalles de Ticket
+```gherkin
+Característica: Crear ticket
 
-> *Como usuario quiero ver detalles completos de un ticket para revisar comentarios*
+  Escenario: El cliente crea un ticket con todos los datos
+    Dado que hay agentes cargados en el sistema
+    Cuando el cliente ingresa el DNI "30123456", la categoría "Conexión" y la descripción "No tengo internet desde ayer"
+    Y confirma la creación del ticket
+    Entonces el sistema crea el ticket con un número único
+    Y el ticket queda en estado "Asignado"
+    Y el ticket tiene un agente asignado
+    Y la fecha de inicio es la fecha y hora actuales
 
-Muestra ID, asunto, descripción, categoría, estado, fecha, agente asignado e historial de comentarios (autor, fecha, contenido).
+  Escenario: El cliente no completa la descripción
+    Cuando el cliente ingresa el DNI "30123456" y la categoría "Conexión" sin descripción
+    Y confirma la creación del ticket
+    Entonces el sistema muestra el mensaje "Complete todos los campos"
+    Y no se crea ningún ticket
+```
 
-### USER STORY — US-006: Actualizar Estado de Ticket
+### US-02: Asignación automática de agente
 
-> *Como agente quiero cambiar el estado de un ticket para reflejar su avance*
+> *Como **cliente** quiero que mi ticket quede asignado a un agente apenas lo creo para que ninguna solicitud quede sin atender.*
 
-Estados: Abierto, En Progreso, Esperando al Cliente, Resuelto, Cerrado. Cambio reflejado en menos de 2 segundos. Cliente puede ver el estado actualizado.
+| Criterio | Resultado esperado |
+|---|---|
+| CA-2.1 Hay agentes cargados | El sistema elige uno al azar y lo asigna |
+| CA-2.2 No hay agentes cargados | Mensaje: "No hay agentes disponibles"; no se crea el ticket |
 
-### USER STORY — US-007: Asignar Ticket a Agente
+```gherkin
+Característica: Asignación automática de agente
 
-> *Como agente quiero asignar un ticket a otro agente para distribuir la carga*
+  Escenario: Se asigna un agente al crear el ticket
+    Dado que los agentes "25987654" y "28555111" están cargados
+    Cuando el cliente crea un ticket
+    Entonces el ticket queda asignado a uno de esos dos agentes
 
-Asignación manual. Sistema registra quién asignó, a quién y fecha/hora. Ticket visible en búsqueda por DNI del agente asignado.
+  Escenario: No hay agentes cargados
+    Dado que no hay agentes cargados
+    Cuando el cliente intenta crear un ticket
+    Entonces el sistema muestra el mensaje "No hay agentes disponibles"
+    Y no se crea ningún ticket
+```
 
-### USER STORY — US-008: Agregar Comentario
+### US-03: Consultar mis tickets
 
-> *Como usuario quiero dejar comentarios en un ticket para comunicarme*
+> *Como **cliente** quiero ingresar mi DNI para ver mis tickets y en qué estado está cada uno.*
 
-Cliente y agente pueden comentar. Se registra autor, timestamp y contenido. Aparece inmediatamente en el hilo.
+| Criterio | Resultado esperado |
+|---|---|
+| CA-3.1 El DNI tiene tickets | Lista con número, categoría, estado, agente y fechas |
+| CA-3.2 El DNI no tiene tickets | Mensaje: "No hay tickets para este DNI" |
+| CA-3.3 Campo vacío | Mensaje: "Ingrese su DNI" |
 
-### USER STORY — US-009: Ver Reportes Básicos
+```gherkin
+Característica: Consultar tickets del cliente
 
-> *Como usuario quiero ver reportes básicos para analizar el estado general*
+  Escenario: El cliente tiene tickets
+    Dado que el DNI "30123456" tiene 2 tickets
+    Cuando el cliente busca sus tickets con el DNI "30123456"
+    Entonces el sistema muestra 2 tickets con su estado actual
 
-Cantidad total de tickets, tickets agrupados por estado y categorías con mayor cantidad de tickets.
+  Escenario: El cliente no tiene tickets
+    Cuando el cliente busca sus tickets con el DNI "40111222"
+    Entonces el sistema muestra el mensaje "No hay tickets para este DNI"
+```
 
-### Matriz: Actores vs User Stories
+### US-04: Confirmar resolución
 
-| Actor | User Stories | Funcionalidades |
-|---|---|---|
-| Cliente | US-001, US-002, US-003, US-004, US-005, US-008 | Crear cuenta, buscar, crear ticket, ver listado, detalles, comentar |
-| Agente | US-001, US-002, US-004, US-005, US-006, US-007, US-008 | Crear cuenta, buscar, ver listado, detalles, actualizar estado, asignar, comentar |
+> *Como **cliente** quiero confirmar que mi problema fue resuelto para cerrar el ticket.*
 
-**Componentes del sistema:** 9 User Stories · 2 Actores · 5 Estados de Ticket · Identificación por DNI (sin autenticación) · Interfaz única · Reportes básicos integrados.
+| Criterio | Resultado esperado |
+|---|---|
+| CA-4.1 Ticket en revisión y problema resuelto | Pasa a **Cerrado** y se registra la fecha de finalización |
+| CA-4.2 Ticket en revisión y el problema sigue | Vuelve a **En proceso** |
 
-**Características principales:** Sin login/logout · Sin administrador · Búsqueda por DNI · Sistema básico y funcional.
+```gherkin
+Característica: Confirmar resolución del ticket
+
+  Escenario: El cliente confirma que el problema fue resuelto
+    Dado que el ticket 1 está en estado "En revisión"
+    Cuando el cliente cambia el estado del ticket 1 a "Cerrado"
+    Entonces el ticket 1 queda en estado "Cerrado"
+    Y se registra la fecha de finalización
+
+  Escenario: El problema del cliente sigue
+    Dado que el ticket 1 está en estado "En revisión"
+    Cuando el cliente cambia el estado del ticket 1 a "En proceso"
+    Entonces el ticket 1 queda en estado "En proceso"
+    Y la fecha de finalización sigue vacía
+```
+
+### US-05: Ver tickets asignados
+
+> *Como **agente** quiero ingresar mi DNI para ver los tickets que tengo asignados y organizar mi trabajo.*
+
+| Criterio | Resultado esperado |
+|---|---|
+| CA-5.1 DNI de un agente con tickets | Lista de sus tickets, del más antiguo al más reciente |
+| CA-5.2 Filtro por estado | Solo los tickets en ese estado |
+| CA-5.3 DNI que no es de un agente | Mensaje: "Agente no encontrado" |
+
+```gherkin
+Característica: Consultar tickets asignados
+
+  Escenario: El agente ve sus tickets
+    Dado que el agente "25987654" tiene 3 tickets asignados
+    Cuando el agente busca sus tickets con el DNI "25987654"
+    Entonces el sistema muestra 3 tickets
+
+  Escenario: El DNI no corresponde a un agente
+    Cuando se buscan los tickets asignados al DNI "99999999"
+    Entonces el sistema muestra el mensaje "Agente no encontrado"
+```
+
+### US-06: Actualizar estado
+
+> *Como **agente** quiero cambiar el estado de un ticket para reflejar el avance de su resolución.*
+
+| Criterio | Resultado esperado |
+|---|---|
+| CA-6.1 Empieza a trabajar | **Asignado → En proceso** |
+| CA-6.2 Termina su trabajo | **En proceso → En revisión** (pendiente de confirmación del cliente) |
+| CA-6.3 Estado fuera de la lista | Mensaje: "Estado inválido" |
+
+```gherkin
+Característica: Actualizar estado del ticket
+
+  Escenario: El agente empieza a trabajar el ticket
+    Dado que el ticket 1 está en estado "Asignado"
+    Cuando el agente cambia el estado del ticket 1 a "En proceso"
+    Entonces el ticket 1 queda en estado "En proceso"
+
+  Escenario: El agente termina su trabajo
+    Dado que el ticket 1 está en estado "En proceso"
+    Cuando el agente cambia el estado del ticket 1 a "En revisión"
+    Entonces el ticket 1 queda en estado "En revisión"
+    Y el cliente puede ver que su ticket espera confirmación
+```
+
+### US-07: Frecuencia por categoría
+
+> *Como **agente** quiero ver cuántos tickets hay de cada categoría para saber qué problemas se repiten.*
+
+| Criterio | Resultado esperado |
+|---|---|
+| CA-7.1 Hay tickets | Cantidad por cada categoría, incluidas las que tienen 0 |
+
+```gherkin
+Característica: Frecuencia por categoría
+
+  Escenario: Se consulta la frecuencia
+    Dado que hay 3 tickets de "Conexión" y 1 de "Facturación"
+    Cuando se consulta la frecuencia por categoría
+    Entonces el sistema informa "Conexión": 3, "Facturación": 1, "Consulta general": 0 y "Otro": 0
+```
+
+### US-08: Tiempo promedio de resolución
+
+> *Como **agente** quiero saber cuánto se tarda en promedio en resolver un ticket para medir la eficiencia del equipo.*
+
+| Criterio | Resultado esperado |
+|---|---|
+| CA-8.1 Hay tickets cerrados | Promedio en horas entre fecha de inicio y de finalización |
+| CA-8.2 No hay tickets cerrados | Promedio vacío |
+
+```gherkin
+Característica: Tiempo promedio de resolución
+
+  Escenario: Hay tickets cerrados
+    Dado que un ticket cerrado tardó 2 horas y otro tardó 4 horas
+    Cuando se consulta el tiempo promedio de resolución
+    Entonces el sistema informa 3 horas
+```
+
+### US-09: Top de categorías
+
+> *Como **agente** quiero ver las categorías con más tickets para priorizar mejoras del servicio.*
+
+| Criterio | Resultado esperado |
+|---|---|
+| CA-9.1 Sin indicar cantidad | Las 3 categorías con más tickets, de mayor a menor |
+| CA-9.2 Indicando cantidad N | Las N categorías con más tickets |
+
+```gherkin
+Característica: Top de categorías
+
+  Escenario: Se consulta el top 2
+    Dado que hay 5 tickets de "Conexión", 3 de "Facturación" y 1 de "Otro"
+    Cuando se consulta el top de 2 categorías
+    Entonces el sistema informa "Conexión" con 5 y "Facturación" con 3
+```
+
+## 3. Matriz actores vs. user stories
+
+| Actor | User stories |
+|---|---|
+| Cliente | US-01, US-03, US-04 |
+| Agente de soporte | US-05, US-06, US-07, US-08, US-09 |
+| Sistema (automático) | US-02 (y el cálculo de US-07, US-08, US-09) |
+
+**Resumen:** 9 user stories · 2 actores + procesos automáticos · 4 estados · identificación por DNI · sin login.

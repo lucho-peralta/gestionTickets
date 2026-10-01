@@ -1,0 +1,140 @@
+paths:
+
+  /reportes/frecuencia-categorias:
+    get:
+      tags: [reportes]
+      operationId: reportes-frecuencia-categorias-get
+      summary: Cantidad de tickets de cada categoría (incluye las que tienen 0).
+      responses:
+        "200":
+          description: Frecuencia por categoría.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/schemas/categoria-cantidad"
+              examples:
+                default:
+                  value:
+                    - categoria: conexion
+                      cantidad: 12
+                    - categoria: facturacion
+                      cantidad: 7
+                    - categoria: consulta_general
+                      cantidad: 4
+                    - categoria: otro
+                      cantidad: 0
+
+  /reportes/tiempo-promedio-resolucion:
+    get:
+      tags: [reportes]
+      operationId: reportes-tiempo-promedio-get
+      summary: Tiempo promedio (en horas) entre fecha_inicio y fecha_finalizacion de los tickets cerrados.
+      parameters:
+        - in: query
+          name: categoria
+          required: false
+          description: Calcula el promedio solo para esa categoría.
+          schema:
+            $ref: "common.yaml#/schemas/categoria"
+      responses:
+        "200":
+          description: Tiempo promedio de resolución.
+          content:
+            application/json:
+              schema:
+                $ref: "#/schemas/tiempo-promedio"
+              examples:
+                general:
+                  value:
+                    categoria: null
+                    tickets_cerrados: 15
+                    promedio_horas: 6.4
+                sin-cerrados:
+                  value:
+                    categoria: null
+                    tickets_cerrados: 0
+                    promedio_horas: null
+        "400":
+          $ref: "common.yaml#/responses/datos-invalidos"
+
+  /reportes/top-categorias:
+    get:
+      tags: [reportes]
+      operationId: reportes-top-categorias-get
+      summary: Las N categorías con más tickets, de mayor a menor.
+      parameters:
+        - in: query
+          name: limite
+          required: false
+          description: Cantidad de categorías a devolver.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 4
+            default: 3
+      responses:
+        "200":
+          description: Top de categorías.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/schemas/categoria-cantidad"
+              examples:
+                top-3:
+                  value:
+                    - categoria: conexion
+                      cantidad: 12
+                    - categoria: facturacion
+                      cantidad: 7
+                    - categoria: consulta_general
+                      cantidad: 4
+        "400":
+          $ref: "common.yaml#/responses/datos-invalidos"
+
+# ----------------------------------------------
+# Esquemas
+# ----------------------------------------------
+
+schemas:
+
+  categoria-cantidad:
+    type: object
+    required:
+      - categoria
+      - cantidad
+    properties:
+      categoria:
+        $ref: "common.yaml#/schemas/categoria"
+      cantidad:
+        type: integer
+        minimum: 0
+
+  tiempo-promedio:
+    type: object
+    required:
+      - categoria
+      - tickets_cerrados
+      - promedio_horas
+    properties:
+      categoria:
+        description: Categoría filtrada, o null si el promedio es general.
+        type: string
+        nullable: true
+        enum:
+          - conexion
+          - facturacion
+          - consulta_general
+          - otro
+          - null
+      tickets_cerrados:
+        description: Cantidad de tickets cerrados considerados.
+        type: integer
+        minimum: 0
+      promedio_horas:
+        description: Promedio en horas. Null si no hay tickets cerrados.
+        type: number
+        nullable: true

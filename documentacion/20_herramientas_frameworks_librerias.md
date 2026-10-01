@@ -1,43 +1,25 @@
 # Herramientas, Frameworks y Librerías
 
-## Lenguaje
+Responsable: Luciano
 
-JavaScript. Entorno de ejecución: Node.js.
+| Área | Elección | Para qué |
+|---|---|---|
+| Lenguaje | **JavaScript** sobre **Node.js** | Back-end |
+| Framework HTTP | **Express** | Capa de controladores y ruteo |
+| Especificación de la API | **OpenAPI 3** escrito a mano en YAML (`tickets-openapi/`) | Contrato entre back-end y front-end |
+| Documentación de la API | **Redocly CLI** | Validar y renderizar la especificación |
+| Validación de entrada | **Zod** (a confirmar) | Validar el body y los parámetros de cada endpoint |
+| Base de datos | **PostgreSQL** | Tablas `agente` y `ticket` |
+| Acceso a datos | **pg** (driver nativo) | SQL explícito dentro de cada repositorio |
+| Testing | **Hurl** + **Prism** | Tests Happy Path contra el mock de Prism (semana 5) y después contra el back-end real |
+| Configuración | **dotenv** | Variables de entorno (conexión a la base, puerto) |
+| Calidad de código | **ESLint** + **Prettier** | Estilo y errores comunes |
+| Contenedores | **Docker** (Dockerfile) | Empaquetar back-end y front-end |
+| Orquestación local | **Docker Compose** | Levantar front-end, back-end y PostgreSQL con un solo comando |
+| Diagramas | **Mermaid** y **Graphviz** | Según la herramienta indicada en cada semana del cronograma |
+| Diseño de datos | **drawDB** | Importar el script SQL de `22_diseno_datos_erd.md` y visualizar el ERD |
+| Front-end | A definir en la semana 9 | Opciones de la cátedra: Alpine, Preact, Mithril, Pico CSS, Bulma, entre otras |
 
-## Framework HTTP
+## Datos iniciales
 
-Express. Implementa la capa Controlador.
-
-## API
-
-OpenAPI, spec escrito a mano en YAML a partir de `06_api.md`. Redocly CLI, para renderizar y validar ese spec.
-
-## Validación
-
-Zod — pendiente de validación. Define y valida los esquemas de entrada de cada endpoint antes de pasar el request al Servicio.
-
-## Base de datos
-
-PostgreSQL. Almacena los datos de Usuarios, Tickets y Eventos_Ticket.
-
-## Acceso a datos (Repositorio)
-
-pg (driver nativo de PostgreSQL), con SQL explícito en cada implementación de Repositorio.
-
-## Testing
-
-Hurl y Prism, para la batería de tests de Happy Path sobre el contrato OpenAPI. Ambas herramientas están listadas por la cátedra para Semana 5.
-
-## Configuración
-
-dotenv, para variables de entorno (cadena de conexión a la base, puerto del servidor).
-
-## Calidad de código
-
-ESLint y Prettier.
-
-## Contenedores
-
-Docker (Dockerfile): empaqueta el backend como una imagen ejecutable, con Node.js y sus dependencias incluidas, para que corra igual en cualquier máquina.
-
-Docker Compose: levanta juntos, con un solo comando, el backend y la base de datos PostgreSQL (y más adelante el frontend), cada uno en su propio contenedor.
+Como los agentes están precargados, el back-end incluye un script SQL de **seed** que inserta los agentes al crear la base (ver `22_diseno_datos_erd.md`).
