@@ -18,8 +18,11 @@ digraph CasosDeUso {
     node [fontname="Helvetica,Arial,sans-serif", shape=ellipse];
     edge [fontname="Helvetica,Arial,sans-serif", fontsize=10, dir=none];
 
+    // Actores: Cliente en la primera columna, Agente en la última
     Cliente [label="Cliente", shape=box];
     Agente  [label="Agente de Soporte", shape=box];
+    { rank=min; Cliente; }
+    { rank=max; Agente; }
 
     subgraph cluster_sistema {
         label="Sistema de Gestión de Tickets de Soporte";
@@ -47,6 +50,14 @@ digraph CasosDeUso {
     UC9 -> Agente;
 
     UC1 -> UC2 [label="<<include>>", style=dashed, dir=forward, arrowhead=open];
+
+    // Invisibles: solo ordenan columnas (no se dibujan)
+    Cliente -> UC5 [style=invis];
+    Cliente -> UC6 [style=invis];
+    Cliente -> UC7 [style=invis];
+    Cliente -> UC8 [style=invis];
+    Cliente -> UC9 [style=invis];
+    UC2 -> Agente [style=invis];
 }
 ```
 
