@@ -1,12 +1,10 @@
 # Herramientas, Frameworks y Librerías
 
-Responsable: Luciano
-
 | Área | Elección | Para qué |
 |---|---|---|
 | Lenguaje | **JavaScript** sobre **Node.js** | Back-end |
 | Framework HTTP | **Express** | Capa de controladores y ruteo |
-| Especificación de la API | **OpenAPI 3** escrito a mano en YAML (`tickets-openapi/`) | Contrato entre back-end y front-end |
+| Especificación de la API | **OpenAPI 3** escrito a mano en YAML (`documentacion/openapi/`) | Contrato entre back-end y front-end |
 | Documentación de la API | **Redocly CLI** | Validar y renderizar la especificación |
 | Validación de entrada | **Zod** (a confirmar) | Validar el body y los parámetros de cada endpoint |
 | Base de datos | **PostgreSQL** | Tablas `agente` y `ticket` |

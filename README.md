@@ -24,7 +24,9 @@ No hay login ni contraseñas: todos entran directo a la interfaz principal y se 
 | `enunciadoGral.md` | Enunciado original de la cátedra (referencia). |
 | `planifProfesor.md` | Cronograma semanal de la cátedra (referencia). |
 | `documentacion/` | Entregables del equipo, numerados según el cronograma. |
-| `tickets-openapi/` | Especificación OpenAPI 3 de la REST API. |
+| `documentacion/openapi/` | Especificación OpenAPI 3 de la REST API. |
+| `gherkin/` | Comportamiento de la API en Gherkin (un `.feature` por escenario). |
+| `hurl/` | Tests Happy Path en Hurl (uno por cada `.feature`), contra el mock de Prism y el back-end real. |
 | `backend/` | Código del back-end (a desarrollar). |
 
 ## Índice de la documentación
@@ -53,9 +55,11 @@ No hay login ni contraseñas: todos entran directo a la interfaz principal y se 
 | 4 | [20_herramientas_frameworks_librerias.md](documentacion/20_herramientas_frameworks_librerias.md) | Herramientas, frameworks y librerías |
 | 3/4 | [21_diccionario_de_datos.md](documentacion/21_diccionario_de_datos.md) | Diccionario de datos |
 | 4 | [22_diseno_datos_erd.md](documentacion/22_diseno_datos_erd.md) | Diseño de datos (ERD) |
+| 5 | [gherkin/](gherkin/) | Escenarios Gherkin de la API |
+| 5 | [hurl/](hurl/README.md) | Tests Happy Path (Hurl + Prism) |
 
 ## Cómo ver los diagramas
 
 - **Mermaid** (Gantt, Kanban, secuencia, estados, actividades, arquitectura, ERD): se ven directo en GitHub o pegando el código en <https://mermaid.live>.
 - **Graphviz** (DFD, casos de uso, proceso de negocio): pegar el bloque `dot` en <https://dreampuf.github.io/GraphvizOnline>.
-- **OpenAPI**: `npx @redocly/cli preview-docs tickets-openapi/openapi/main.yaml`.
+- **OpenAPI**: `npx @redocly/cli preview-docs documentacion/openapi/main.yaml`.

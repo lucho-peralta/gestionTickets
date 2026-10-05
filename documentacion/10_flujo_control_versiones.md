@@ -1,7 +1,5 @@
 # Flujo de Control de Versiones
 
-Responsable: Franco
-
 El equipo usa **Git** con un flujo de ramas por tarea (*feature branch workflow*):
 
 - **`main` protegida:** solo entra código o documentación revisada por otra persona.

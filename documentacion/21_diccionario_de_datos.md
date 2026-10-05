@@ -1,7 +1,5 @@
 # Diccionario de Datos
 
-Responsable: Juan
-
 Describe cada elemento de los DFD de `12_diagrama_flujo_datos.md`: entidades externas, procesos, almacenamientos, flujos, registros y elementos de datos.
 
 ## 1. Entidades externas

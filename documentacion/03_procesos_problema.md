@@ -1,7 +1,5 @@
 # Procesos Actuales y Problemas a Resolver
 
-Responsable: Juan
-
 ## 1. Proceso actual
 
 Hoy las consultas y reclamos llegan por **canales informales**, principalmente correos electrónicos, llamados y mensajes directos.

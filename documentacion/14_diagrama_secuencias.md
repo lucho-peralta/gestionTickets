@@ -1,7 +1,5 @@
 # Diagramas de Secuencia
 
-Responsable: Lucas
-
 Herramienta: **Mermaid** (`sequenceDiagram`). Muestran, en orden temporal, los mensajes que intercambian los actores, la API y la base de datos en los cuatro flujos principales del sistema. Los endpoints corresponden a `19_rest_api.md`.
 
 ## 1. Crear ticket (con asignación automática)

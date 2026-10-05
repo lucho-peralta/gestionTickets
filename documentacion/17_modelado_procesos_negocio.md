@@ -1,7 +1,5 @@
 # Modelado del Proceso de Negocio
 
-Responsable: Franco
-
 Herramienta: **Graphviz** (visualizar en <https://dreampuf.github.io/GraphvizOnline>). Se modela el proceso **"Atención de un pedido de soporte"** con notación inspirada en BPMN: un carril (*lane*) por participante, eventos de inicio y fin (círculos), tareas (rectángulos redondeados) y compuertas de decisión (rombos).
 
 ## 1. Proceso actual (antes del sistema)

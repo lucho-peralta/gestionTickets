@@ -1,6 +1,6 @@
 # API Básica — Endpoints Previstos
 
-Este documento corresponde a la Semana 1 ("Documentar API básica"): lista **qué endpoints va a tener la API** y quién los usa. El diseño completo (request, response, códigos de error) está en `19_rest_api.md` y en la especificación OpenAPI de `tickets-openapi/`.
+Este documento corresponde a la Semana 1 ("Documentar API básica"): lista **qué endpoints va a tener la API** y quién los usa. El diseño completo (request, response, códigos de error) está en `19_rest_api.md` y en la especificación OpenAPI de `openapi/`.
 
 ## Convenciones
 

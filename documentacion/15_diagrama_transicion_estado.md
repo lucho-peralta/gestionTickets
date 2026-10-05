@@ -1,7 +1,5 @@
 # Diagrama de Transición de Estado — Ticket
 
-Responsable: Juan
-
 Herramienta: **Mermaid** (`stateDiagram-v2`). Modela el ciclo de vida de un ticket, desde que el cliente lo crea hasta que confirma que su problema fue resuelto.
 
 ```mermaid

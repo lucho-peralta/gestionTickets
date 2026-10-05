@@ -1,8 +1,6 @@
 # Plan de Trabajo y Kanban — Sistema de Gestión de Tickets de Soporte
 
-Responsable: Luciano
-
-> **Actualización 30/09:** toda la documentación (01 a 22 y `tickets-openapi/`) se reescribió con el modelo definitivo del sistema: tablas `agente` y `ticket`, asignación automática de agente, estados *Asignado → En proceso → En revisión → Cerrado* y reportes de frecuencia por categoría, tiempo promedio de resolución y top de categorías. Por eso todos los documentos vuelven a la columna **En revisión** del Kanban hasta que el equipo los apruebe.
+> **Actualización 30/09:** toda la documentación (01 a 22 y `documentacion/openapi/`) se reescribió con el modelo definitivo del sistema: tablas `agente` y `ticket`, asignación automática de agente, estados *Asignado → En proceso → En revisión → Cerrado* y reportes de frecuencia por categoría, tiempo promedio de resolución y top de categorías. Por eso todos los documentos vuelven a la columna **En revisión** del Kanban hasta que el equipo los apruebe.
 
 ## Semana 1 — Análisis de casos de negocio
 
@@ -42,7 +40,7 @@ Responsable: Luciano
 | Archivo | Tarea | Responsable |
 |---|---|---|
 | `18_arquitectura.md` | Arquitectura general | Luciano |
-| `19_rest_api.md` + `tickets-openapi/` | Diseño de la REST API (OpenAPI) | Juan |
+| `19_rest_api.md` + `documentacion/openapi/` | Diseño de la REST API (OpenAPI) | Juan |
 | `20_herramientas_frameworks_librerias.md` | Herramientas, frameworks y librerías | Luciano |
 | `22_diseno_datos_erd.md` | Diseño de datos (ERD) | Lucas |
 | `11_metodologia_trabajo.md` (sección entregas parciales) | Planificación de sprints / entregas parciales | Lucas |
@@ -51,7 +49,7 @@ Responsable: Luciano
 
 | Semana | Fecha | Etapa | Responsable |
 |---|---|---|---|
-| 5 | 21/09 | Tests Happy Path (Hurl + Prism) | A definir |
+| 5 | 21/09 | Tests Happy Path (Hurl + Prism) — `gherkin/` + `hurl/`, pasan contra el mock de Prism | A definir |
 | 6 | 28/09 | Back-end: estructura, endpoints básicos, base de datos | A definir |
 | 7 | 05/10 | Back-end: lógica de negocio (asignación, reportes) y Docker | A definir |
 | 8 | 12/10 | Presentación preliminar | Equipo completo |
@@ -77,7 +75,6 @@ Para verlo o actualizarlo, pegar el código en <https://mermaid.live>.
 ```mermaid
 kanban
   Pendiente[Pendiente]
-    s5a[Tests Happy Path - A definir]
     s6a[Back-end: estructura y endpoints - A definir]
   En_progreso[En progreso]
   En_revision[En revisión]
@@ -103,5 +100,6 @@ kanban
     s4b[19 REST API y OpenAPI - Juan]
     s4c[20 Herramientas - Luciano]
     s4d[22 ERD - Lucas]
+    s5a[Tests Happy Path - A definir]
   Finalizado[Finalizado]
 ```

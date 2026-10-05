@@ -1,7 +1,5 @@
 # Diseño de la Arquitectura General
 
-Responsable: Luciano
-
 Alcance: bloques del sistema y cómo se comunican. El detalle de los endpoints está en `19_rest_api.md`, el de las tablas en `22_diseno_datos_erd.md` y las tecnologías concretas en `20_herramientas_frameworks_librerias.md`.
 
 ## Diagrama de arquitectura

@@ -1,7 +1,5 @@
 # Diagramas de Flujo de Datos (DFD)
 
-Responsable: Juan
-
 Herramienta: **Graphviz**. Para visualizarlos, pegar cada bloque `dot` en <https://dreampuf.github.io/GraphvizOnline>.
 
 El detalle de cada entidad, proceso, almacenamiento y flujo está en `21_diccionario_de_datos.md`.

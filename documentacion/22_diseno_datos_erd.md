@@ -1,7 +1,5 @@
 # Diseño de Datos (ERD)
 
-Responsable: Lucas
-
 El sistema usa **dos tablas**: `agente` y `ticket`. No hay tabla de clientes (el cliente se identifica solo con su DNI dentro del ticket) ni de categorías o estados (son listas fijas).
 
 ## Diagrama entidad-relación

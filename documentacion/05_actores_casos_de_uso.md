@@ -1,7 +1,8 @@
 # Actores, User Stories y Escenarios Gherkin
 
+> Estos escenarios describen el comportamiento desde el punto de vista del usuario (semana 1). Los escenarios a nivel API, que se usan para los tests de la semana 5, están en `gherkin/` (un `.feature` por cada `.hurl` de `hurl/`).
 
-## 1. Identificación de actores
+
 
 ### Actor 1: Cliente
 

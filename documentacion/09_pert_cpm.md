@@ -1,7 +1,5 @@
 # Diagrama PERT / CPM
 
-Responsable: Juan
-
 El PERT muestra las actividades del proyecto, sus dependencias y su duración en semanas. El **camino crítico** (CPM) es la secuencia de actividades sin holgura: si cualquiera de ellas se atrasa, se atrasa la entrega final.
 
 ## Actividades

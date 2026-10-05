@@ -1,7 +1,5 @@
 # Alcance del Proyecto
 
-Responsable: Juan
-
 ## 1. Descripción breve
 
 El proyecto consiste en desarrollar un **Sistema de Gestión de Tickets de Soporte**: una aplicación web donde los clientes de un servicio reportan sus problemas, el sistema le asigna cada caso a un agente de soporte, el agente informa el avance cambiando el estado y el cliente confirma cuando su problema quedó resuelto. Con los datos registrados, el sistema genera reportes para analizar qué problemas son más frecuentes y cuánto tardan en resolverse.

@@ -73,6 +73,18 @@ paths:
                     agente:
                       dni: "25987654"
                       nombre: María Gómez
+                asignado:
+                  value:
+                    id: 1
+                    dni_cliente: "30123456"
+                    categoria: conexion
+                    descripcion: No tengo internet desde ayer a la noche.
+                    estado: asignado
+                    fecha_inicio: "2026-09-20T10:15:00Z"
+                    fecha_finalizacion: null
+                    agente:
+                      dni: "25987654"
+                      nombre: María Gómez
         "404":
           $ref: "common.yaml#/responses/ticket-no-encontrado"
 
@@ -121,6 +133,30 @@ paths:
               schema:
                 $ref: "common.yaml#/schemas/ticket"
               examples:
+                en-proceso:
+                  value:
+                    id: 1
+                    dni_cliente: "30123456"
+                    categoria: conexion
+                    descripcion: No tengo internet desde ayer a la noche.
+                    estado: en_proceso
+                    fecha_inicio: "2026-09-20T10:15:00Z"
+                    fecha_finalizacion: null
+                    agente:
+                      dni: "25987654"
+                      nombre: María Gómez
+                en-revision:
+                  value:
+                    id: 1
+                    dni_cliente: "30123456"
+                    categoria: conexion
+                    descripcion: No tengo internet desde ayer a la noche.
+                    estado: en_revision
+                    fecha_inicio: "2026-09-20T10:15:00Z"
+                    fecha_finalizacion: null
+                    agente:
+                      dni: "25987654"
+                      nombre: María Gómez
                 cerrado:
                   value:
                     id: 1

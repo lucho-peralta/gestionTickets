@@ -1,7 +1,5 @@
 # Casos de Uso
 
-Responsable: Luciano
-
 El diagrama muestra las asociaciones entre los actores (Cliente y Agente de soporte) y los 9 casos de uso del sistema. *Asignar agente* no lo dispara una persona: el sistema lo ejecuta siempre dentro de *Crear ticket* (relación `<<include>>`). Cada caso de uso corresponde a la user story del mismo número en `05_actores_casos_de_uso.md`.
 
 ## Diagrama de casos de uso

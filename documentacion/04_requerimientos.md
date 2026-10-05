@@ -1,7 +1,5 @@
 # Requerimientos Funcionales y No Funcionales
 
-Responsable: Luciano
-
 Valores de referencia usados en todo el documento:
 
 - **Categorías** (lista fija): `conexion` (Conexión), `facturacion` (Facturación), `consulta_general` (Consulta general), `otro` (Otro).

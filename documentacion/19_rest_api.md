@@ -1,8 +1,6 @@
 # Diseño de la REST API
 
-Responsable: Juan
-
-Este documento define los endpoints de la API: qué rutas existen, qué recibe y qué devuelve cada una, y qué errores puede dar. Funciona como **contrato** entre el back-end y el front-end. La versión formal es la especificación OpenAPI de `tickets-openapi/openapi/main.yaml`; si hay diferencias, se corrigen ambos.
+Este documento define los endpoints de la API: qué rutas existen, qué recibe y qué devuelve cada una, y qué errores puede dar. Funciona como **contrato** entre el back-end y el front-end. La versión formal es la especificación OpenAPI de `documentacion/openapi/main.yaml`; si hay diferencias, se corrigen ambos.
 
 ## 1. Objetivo
 
