@@ -49,10 +49,13 @@ Prefer: example=general
 HTTP 200
 [Asserts]
 header "sl-violations" not exists
+
 jsonpath "$.categoria" == null
 jsonpath "$.tickets_cerrados" >= 1
-jsonpath "$.promedio_horas" isNumber
+jsonpath "$.promedio_horas" isFloat
 jsonpath "$.promedio_horas" >= 0
+
+
 
 
 #     Cuando se solicita el reporte de tiempo promedio para la categoría "conexion"
