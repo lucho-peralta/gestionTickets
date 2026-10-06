@@ -11,12 +11,17 @@ export const app = express();
 
 app.use(express.json());
 
+
+// rutas tickets
 app.post('/tickets', crearTicket);
 app.get('/tickets/:id', obtenerTicket);
 
 // Rutas de reportes
 app.get('/reportes/top-categorias', topCategorias);
 app.get('/reportes/tiempo-promedio-resolucion', tiempoPromedioResolucion);
+
+
+// server
 
 const PORT = process.env.PORT || 3000;
 
