@@ -19,6 +19,36 @@ HTTP 201
 header "sl-violations" not exists
 
 
+#     Cuando el cliente crea un ticket con categoría "facturacion"
+#     Entonces la creación debe ser exitosa
+
+POST {{ host }}/tickets
+Accept: application/json
+{
+  "dni_cliente": "30123456",
+  "categoria": "facturacion",
+  "descripcion": "Pago duplicado en la factura."
+}
+HTTP 201
+[Asserts]
+header "sl-violations" not exists
+
+
+#     Cuando el cliente crea un ticket con categoría "consulta_general"
+#     Entonces la creación debe ser exitosa
+
+POST {{ host }}/tickets
+Accept: application/json
+{
+  "dni_cliente": "30123456",
+  "categoria": "consulta_general",
+  "descripcion": "Consulta sobre el servicio."
+}
+HTTP 201
+[Asserts]
+header "sl-violations" not exists
+
+
 #     Cuando se solicita el top de categorías sin indicar cantidad
 #     Entonces la solicitud debe ser exitosa
 #     Y no deben existir errores o violaciones en la respuesta
