@@ -3,7 +3,7 @@ import 'dotenv/config';
 import express from 'express';
 import { crearTicket } from './features/crearTicket.js';
 import { obtenerTicket } from './features/obtenerTicket.js';
-
+import { actualizarEstado } from './features/actualizarEstado.js';
 import { topCategorias } from './features/topCategorias.js';
 import { tiempoPromedioResolucion } from './features/tiempoPromedioResolucion.js';
 
@@ -15,6 +15,7 @@ app.use(express.json());
 // rutas tickets
 app.post('/tickets', crearTicket);
 app.get('/tickets/:id', obtenerTicket);
+app.patch('/tickets/:id/estado', actualizarEstado);
 
 // Rutas de reportes
 app.get('/reportes/top-categorias', topCategorias);
