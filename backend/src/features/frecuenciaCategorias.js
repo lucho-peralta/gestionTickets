@@ -11,7 +11,7 @@ export function frecuenciaCategorias(req, res) {
       )
       .all();
 
-    // Partimos de las 4 categorías para incluir también las que tienen 0 tickets
+
     const reporte = CATEGORIAS_VALIDAS.map((categoria) => {
       const fila = filas.find((f) => f.categoria === categoria);
       return {

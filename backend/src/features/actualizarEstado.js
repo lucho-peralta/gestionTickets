@@ -6,19 +6,17 @@ export function actualizarEstado(req, res) {
     const id = Number(req.params.id);
     const { estado } = req.body;
 
-    // Validación 1: El ID debe ser un número válido
     if (Number.isNaN(id)) {
       res.status(404).json({ message: 'Ticket no encontrado' });
       return;
     }
 
-    // Validación 2: El estado debe estar dentro de la lista permitida
     if (!ESTADOS_VALIDOS.includes(estado)) {
       res.status(400).json({ message: 'Estado inválido' });
       return;
     }
 
-    // Regla de negocio: Si el estado es cerrado, guardamos la fecha actual
+  
     let fechaFinalizacion = null;
     let query = `UPDATE ticket SET estado = ? WHERE id = ?`;
     let parametros = [estado, id];
@@ -31,13 +29,13 @@ export function actualizarEstado(req, res) {
 
     const resultado = db.prepare(query).run(...parametros);
 
-    // Si changes es 0, significa que no existe un ticket con ese ID
+
     if (resultado.changes === 0) {
       res.status(404).json({ message: 'Ticket no encontrado' });
       return;
     }
 
-    // Buscamos el ticket actualizado uniendo los datos del agente para devolver el JSON completo
+
     const fila = db
       .prepare(
         `SELECT t.id, t.dni_cliente, t.categoria, t.descripcion, t.estado,

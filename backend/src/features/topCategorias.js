@@ -3,7 +3,7 @@ import { db } from '../configuracion/db.js';
 export function topCategorias(req, res) {
   try {
     const limiteStr = req.query.limite;
-    let limite = 3; // Valor por defecto
+    let limite = 3; 
 
     if (limiteStr) {
       const limiteParseado = Number(limiteStr);
@@ -20,7 +20,7 @@ export function topCategorias(req, res) {
          ORDER BY cantidad DESC 
          LIMIT ?`
       )
-      .all(limite); // Usamos .all() porque esperamos múltiples resultados
+      .all(limite); 
 
     res.status(200).json(filas);
   } catch (excepcion) {

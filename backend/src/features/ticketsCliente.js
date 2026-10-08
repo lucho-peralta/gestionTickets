@@ -21,14 +21,12 @@ export function ticketsCliente(req, res) {
   try {
     const { dni } = req.params;
 
-    // Validación: El DNI debe tener 7 u 8 dígitos
     if (!PATRON_DNI.test(dni)) {
       res.status(400).json({ message: 'DNI inválido' });
       return;
     }
 
-    // Como no hay tabla de clientes, un DNI sin tickets devuelve una lista vacía (no un 404)
-    // Orden: del ticket más reciente al más antiguo
+  
     const filas = db
       .prepare(
         `SELECT t.id, t.dni_cliente, t.categoria, t.descripcion, t.estado,

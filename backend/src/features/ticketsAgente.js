@@ -22,19 +22,16 @@ export function ticketsAgente(req, res) {
     const { dni } = req.params;
     const estado = req.query.estado;
 
-    // Validación 1: El DNI debe tener 7 u 8 dígitos
     if (!PATRON_DNI.test(dni)) {
       res.status(400).json({ message: 'DNI inválido' });
       return;
     }
 
-    // Validación 2: Si viene el filtro, el estado debe estar dentro de la lista permitida
     if (estado !== undefined && !ESTADOS_VALIDOS.includes(estado)) {
       res.status(400).json({ message: 'Estado inválido' });
       return;
     }
 
-    // Validación 3: El agente debe existir
     const agente = db.prepare('SELECT dni FROM agente WHERE dni = ?').get(dni);
 
     if (!agente) {
@@ -42,7 +39,6 @@ export function ticketsAgente(req, res) {
       return;
     }
 
-    // Bandeja de trabajo del agente, del ticket más antiguo al más reciente
     let consulta = `
       SELECT t.id, t.dni_cliente, t.categoria, t.descripcion, t.estado,
              t.fecha_inicio, t.fecha_finalizacion,

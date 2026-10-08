@@ -16,7 +16,7 @@ export function tiempoPromedioResolucion(req, res) {
 
     if (categoria) {
       consulta += ` AND categoria = ?`;
-      fila = db.prepare(consulta).get(categoria); // .get() para una sola fila de resultados[cite: 3, 4]
+      fila = db.prepare(consulta).get(categoria); 
     } else {
       fila = db.prepare(consulta).get();
     }
