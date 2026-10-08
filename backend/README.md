@@ -141,7 +141,10 @@ backend/
 | `POST` | `/tickets` | `crearTicket.js` |
 | `GET` | `/tickets/:id` | `obtenerTicket.js` |
 | `PATCH` | `/tickets/:id/estado` | `actualizarEstado.js` |
+| `DELETE` | `/tickets/:id` | `eliminarTicket.js` |
 | `GET` | `/clientes/:dni/tickets` | `ticketsCliente.js` |
+| `POST` | `/agentes` | `crearAgente.js` |
+| `DELETE` | `/agentes/:dni` | `eliminarAgente.js` |
 | `GET` | `/agentes/:dni/tickets` | `ticketsAgente.js` |
 | `GET` | `/reportes/frecuencia-categorias` | `frecuenciaCategorias.js` |
 | `GET` | `/reportes/tiempo-promedio-resolucion` | `tiempoPromedioResolucion.js` |

@@ -88,6 +88,16 @@ paths:
         "404":
           $ref: "common.yaml#/responses/ticket-no-encontrado"
 
+    delete:
+      tags: [tickets]
+      operationId: tickets-id-delete
+      summary: Elimina el ticket, sin importar su estado. Deja de contarse en los reportes.
+      responses:
+        "204":
+          description: Ticket eliminado (sin cuerpo).
+        "404":
+          $ref: "common.yaml#/responses/ticket-no-encontrado"
+
   /tickets/{id}/estado:
     summary: Estado de un ticket.
     parameters:

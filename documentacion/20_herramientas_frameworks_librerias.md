@@ -20,4 +20,4 @@
 
 ## Datos iniciales
 
-Como los agentes están precargados, el back-end incluye un script SQL de **seed** que inserta los agentes al crear la base (ver `22_diseno_datos_erd.md`).
+Para que el sistema arranque con agentes, el back-end incluye un script SQL de **seed** que inserta los agentes iniciales al crear la base (ver `22_diseno_datos_erd.md`). Después se pueden dar de alta y de baja con `POST /agentes` y `DELETE /agentes/{dni}`.

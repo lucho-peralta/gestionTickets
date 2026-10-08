@@ -1,5 +1,64 @@
 paths:
 
+  /agentes:
+    summary: Colección de agentes.
+
+    post:
+      tags: [agentes]
+      operationId: agentes-post
+      summary: Da de alta un agente. A partir del alta puede recibir tickets en la asignación automática.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "common.yaml#/schemas/agente"
+            examples:
+              nuevo:
+                value:
+                  dni: "40111222"
+                  nombre: Juan Pérez
+      responses:
+        "201":
+          description: Agente creado.
+          content:
+            application/json:
+              schema:
+                $ref: "common.yaml#/schemas/agente"
+              examples:
+                creado:
+                  value:
+                    dni: "40111222"
+                    nombre: Juan Pérez
+        "400":
+          $ref: "common.yaml#/responses/datos-invalidos"
+        "409":
+          $ref: "common.yaml#/responses/agente-existente"
+
+  /agentes/{dni}:
+    summary: Un agente en particular.
+    parameters:
+      - in: path
+        name: dni
+        required: true
+        description: DNI del agente.
+        schema:
+          $ref: "common.yaml#/schemas/dni"
+
+    delete:
+      tags: [agentes]
+      operationId: agentes-dni-delete
+      summary: Da de baja un agente. Solo si no tiene tickets asignados, en ningún estado.
+      responses:
+        "204":
+          description: Agente eliminado (sin cuerpo).
+        "400":
+          $ref: "common.yaml#/responses/datos-invalidos"
+        "404":
+          $ref: "common.yaml#/responses/agente-no-encontrado"
+        "409":
+          $ref: "common.yaml#/responses/agente-con-tickets"
+
   /agentes/{dni}/tickets:
     summary: Tickets asignados a un agente (su bandeja de trabajo).
     parameters:

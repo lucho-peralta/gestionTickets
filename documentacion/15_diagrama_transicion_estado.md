@@ -34,4 +34,8 @@ stateDiagram-v2
 | En revisión | Cerrado | Cliente | Confirma que el problema fue resuelto | Guarda `fecha_finalizacion` |
 | En revisión | En proceso | Cliente | Indica que el problema sigue | — |
 
+## Eliminación
+
+Además de este ciclo, el agente puede **eliminar** un ticket en cualquier estado (`DELETE /tickets/{id}`). No es un estado más: el ticket deja de existir y ya no aparece en las consultas ni en los reportes. Por eso no figura en el diagrama.
+
 > El diagrama muestra el camino esperado. De acuerdo con el criterio de **validaciones mínimas** del alcance, la API solo controla que el estado sea uno de los cuatro valores válidos; no bloquea otras transiciones.

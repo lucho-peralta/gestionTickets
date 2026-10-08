@@ -28,22 +28,23 @@ Cada bloque corre en su propio contenedor Docker (front-end, back-end y base de 
 
 ## Bloques
 
-**Front-end.** Aplicación web con tres secciones accesibles desde la pantalla principal, sin login: *Soy cliente* (crear ticket, mis tickets, confirmar resolución), *Soy agente* (tickets asignados, cambiar estado) y *Reportes*. Se comunica con el back-end solo por HTTP/JSON; nunca accede a la base de datos.
+**Front-end.** Aplicación web con tres secciones accesibles desde la pantalla principal, sin login: *Soy cliente* (crear ticket, mis tickets, confirmar resolución), *Soy agente* (tickets asignados, cambiar estado, eliminar ticket, alta y baja de agentes) y *Reportes*. Se comunica con el back-end solo por HTTP/JSON; nunca accede a la base de datos.
 
 **Controladores.** Reciben la petición HTTP, validan su forma (campos obligatorios, tipos, valores de las listas fijas), llaman al servicio correspondiente y arman la respuesta HTTP.
 
 | Controlador | Endpoints |
 |---|---|
-| `TicketControlador` | `POST /tickets`, `GET /tickets/{id}`, `PATCH /tickets/{id}/estado` |
+| `TicketControlador` | `POST /tickets`, `GET /tickets/{id}`, `PATCH /tickets/{id}/estado`, `DELETE /tickets/{id}` |
 | `ClienteControlador` | `GET /clientes/{dni}/tickets` |
-| `AgenteControlador` | `GET /agentes/{dni}/tickets` |
+| `AgenteControlador` | `GET /agentes/{dni}/tickets`, `POST /agentes`, `DELETE /agentes/{dni}` |
 | `ReporteControlador` | `GET /reportes/frecuencia-categorias`, `GET /reportes/tiempo-promedio-resolucion`, `GET /reportes/top-categorias` |
 
 **Servicios.** Orquestan cada caso de uso y aplican las reglas de negocio.
 
 | Servicio | Responsabilidades |
 |---|---|
-| `TicketService` | Crear ticket (pide un agente a `AsignacionService`, fija estado `asignado` y `fecha_inicio`), consultar por cliente y por agente, cambiar estado (si el nuevo estado es `cerrado`, fija `fecha_finalizacion`). |
+| `TicketService` | Crear ticket (pide un agente a `AsignacionService`, fija estado `asignado` y `fecha_inicio`), consultar por cliente y por agente, cambiar estado (si el nuevo estado es `cerrado`, fija `fecha_finalizacion`), eliminar ticket. |
+| `AgenteService` | Dar de alta un agente (si el DNI ya existe, lanza `AgenteExistente`) y darlo de baja (si tiene tickets, lanza `AgenteConTickets`). |
 | `AsignacionService` | Elegir un agente al azar entre los cargados; si no hay, lanza `SinAgentesDisponibles`. |
 | `ReporteService` | Frecuencia por categoría, tiempo promedio de resolución y top de categorías. |
 
@@ -58,8 +59,8 @@ Las listas fijas (`Categoria`, `Estado`) se definen como constantes del dominio.
 
 | Repositorio | Operaciones |
 |---|---|
-| `AgenteRepositorio` | `listar()`, `buscarPorDni(dni)` |
-| `TicketRepositorio` | `guardar(ticket)`, `buscarPorId(id)`, `buscarPorCliente(dni)`, `buscarPorAgente(dni, estado?)`, `actualizarEstado(ticket)`, `contarPorCategoria()`, `promedioResolucion(categoria?)` |
+| `AgenteRepositorio` | `listar()`, `buscarPorDni(dni)`, `guardar(agente)`, `eliminar(dni)` |
+| `TicketRepositorio` | `guardar(ticket)`, `buscarPorId(id)`, `buscarPorCliente(dni)`, `buscarPorAgente(dni, estado?)`, `contarPorAgente(dni)`, `actualizarEstado(ticket)`, `eliminar(id)`, `contarPorCategoria()`, `promedioResolucion(categoria?)` |
 
 **Base de datos.** Dos tablas: `agente` y `ticket`. Solo la acceden los repositorios.
 
@@ -68,7 +69,7 @@ Las listas fijas (`Categoria`, `Estado`) se definen como constantes del dominio.
 | Tipo | Dónde | Ejemplos |
 |---|---|---|
 | De forma | Controlador | Campos obligatorios, DNI de 7 u 8 dígitos, categoría y estado dentro de sus listas |
-| De negocio | Servicio | Existe el ticket, existe el agente, hay agentes para asignar |
+| De negocio | Servicio | Existe el ticket, existe el agente, hay agentes para asignar, el DNI del agente nuevo no está repetido, el agente a dar de baja no tiene tickets |
 
 Siguiendo el criterio de validaciones mínimas del alcance, no se validan las transiciones entre estados.
 
@@ -79,6 +80,7 @@ Siguiendo el criterio de validaciones mínimas del alcance, no se validan las tr
 | Datos inválidos | Controlador | 400 |
 | Ticket o agente inexistente | Servicio | 404 |
 | No hay agentes disponibles | `AsignacionService` | 409 |
+| El agente ya existe / tiene tickets asignados | `AgenteService` | 409 |
 | Error no previsto | Cualquier capa | 500 |
 
 Un manejador central captura las excepciones y las traduce a la respuesta `{ "message": "..." }` definida en `19_rest_api.md`.

@@ -57,6 +57,7 @@ schemas:
         $ref: "#/schemas/dni"
       nombre:
         type: string
+        minLength: 1
         example: María Gómez
 
   ticket:
@@ -147,6 +148,28 @@ responses:
           default:
             value:
               message: "Agente no encontrado"
+
+  agente-existente:
+    description: Ya hay un agente con ese DNI.
+    content:
+      application/json:
+        schema:
+          $ref: "#/schemas/message"
+        examples:
+          default:
+            value:
+              message: "El agente ya existe"
+
+  agente-con-tickets:
+    description: El agente tiene tickets asignados y no se puede dar de baja.
+    content:
+      application/json:
+        schema:
+          $ref: "#/schemas/message"
+        examples:
+          default:
+            value:
+              message: "El agente tiene tickets asignados"
 
   sin-agentes:
     description: No hay agentes cargados para asignar el ticket.

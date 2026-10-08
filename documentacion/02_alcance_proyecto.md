@@ -13,17 +13,17 @@ Es un proyecto **con fines educativos**: se prioriza que el sistema sea simple y
 | **Sin inicio de sesión** | El sistema **no tiene** login, logout, contraseñas ni pantalla de ingreso, y no se va a agregar más adelante. Todos entran directo a la interfaz principal, sin importar el rol. |
 | **Identificación por DNI** | Cuando una función necesita saber quién es el cliente o el agente, se le pide su DNI. |
 | **Sin tabla de clientes** | El cliente no se registra: alcanza con guardar su DNI en el ticket. |
-| **Agentes precargados** | Los agentes ya están cargados en la base de datos. El sistema no los crea, modifica ni elimina. |
+| **Agentes precargados** | La base de datos arranca con agentes cargados. Desde el sistema se pueden dar de alta agentes nuevos y dar de baja los que no tienen tickets asignados; no se modifican. |
 | **Asignación automática** | Al crear un ticket, el sistema elige un agente al azar entre los cargados. No hay reasignación. |
 | **Validaciones mínimas** | Solo se controla que los campos obligatorios estén completos y que la categoría y el estado sean valores válidos. |
-| **Tickets no se eliminan** | Para que ninguna solicitud se pierda. |
+| **Eliminación de tickets** | Un ticket se puede eliminar (por ejemplo, si se cargó por error). Al eliminarlo deja de contarse en los reportes. |
 
 ## 3. Actores
 
 | Actor | Qué puede hacer |
 |---|---|
 | **Cliente** | Crear un ticket, consultar sus tickets por DNI y cerrar el ticket cuando su problema fue resuelto. |
-| **Agente de soporte** | Consultar los tickets que tiene asignados por su DNI, cambiarles el estado y consultar los reportes. |
+| **Agente de soporte** | Consultar los tickets que tiene asignados por su DNI, cambiarles el estado, consultar los reportes, eliminar tickets y dar de alta o de baja agentes. |
 
 El detalle de cada actor y sus user stories está en `05_actores_casos_de_uso.md`.
 
@@ -40,6 +40,9 @@ El detalle de cada actor y sus user stories está en `05_actores_casos_de_uso.md
 | Reporte: frecuencia por categoría | RF-07 |
 | Reporte: tiempo promedio de resolución | RF-08 |
 | Reporte: top de categorías | RF-09 |
+| Dar de alta un agente | RF-10 |
+| Dar de baja un agente | RF-11 |
+| Eliminar ticket | RF-12 |
 
 El detalle de cada requerimiento (funcional y no funcional) está en `04_requerimientos.md`; no se duplica acá para no tener dos versiones que se contradigan.
 
@@ -69,8 +72,8 @@ Diagrama y transiciones en `15_diagrama_transicion_estado.md`.
 |---|---|
 | Login / logout / contraseñas | Directiva de la cátedra: el sistema no tiene inicio de sesión. |
 | Registro de clientes | Alcanza con el DNI del cliente en el ticket. |
-| Alta, baja y modificación de agentes | Los agentes están precargados. |
-| Rol administrador | Solo existen Cliente y Agente. |
+| Modificación de agentes | Solo se dan de alta y de baja; el nombre no se edita. |
+| Rol administrador | Solo existen Cliente y Agente; el alta y la baja de agentes las hace el Agente de soporte. |
 | Reasignación manual de agentes | La asignación es automática y única. |
 | Comentarios / historial de eventos | El seguimiento se hace solo con el estado y las fechas. |
 | Adjuntos | Fuera de alcance. |

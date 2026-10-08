@@ -9,6 +9,7 @@ La API permite:
 - Que el **cliente** registre un ticket, consulte sus tickets por DNI y confirme cuando su problema fue resuelto.
 - Que el **sistema** asigne automáticamente un agente a cada ticket nuevo.
 - Que el **agente** consulte los tickets que tiene asignados y actualice su estado.
+- Que el **agente** elimine tickets y dé de alta o de baja agentes.
 - Obtener **reportes**: frecuencia por categoría, tiempo promedio de resolución y top de categorías.
 
 ## 2. Supuestos
@@ -17,9 +18,9 @@ La API permite:
 |---|---|
 | Sin autenticación | No hay login ni tokens. La identificación es por DNI. |
 | Clientes | No se registran: su DNI viaja dentro del ticket. |
-| Agentes | Están precargados. La API no los crea, modifica ni elimina. |
+| Agentes | La base arranca con agentes precargados. La API permite darlos de alta y de baja (solo si no tienen tickets); no los modifica. |
 | Asignación | Automática y al azar al crear el ticket. Cada ticket tiene exactamente un agente; no hay reasignación. |
-| Tickets | No se eliminan. |
+| Tickets | Se pueden eliminar. Un ticket eliminado deja de contarse en los reportes. |
 | Validaciones | Mínimas: campos obligatorios y valores de las listas fijas. No se validan transiciones de estado. |
 
 ## 3. Convenciones
@@ -39,10 +40,11 @@ La API permite:
 | Código | Significado | Cuándo se usa |
 |---|---|---|
 | 200 | OK | Consulta o actualización correcta |
-| 201 | Creado | Se creó un ticket |
+| 201 | Creado | Se creó un ticket o un agente |
+| 204 | Sin contenido | Se eliminó un ticket o un agente (la respuesta no tiene cuerpo) |
 | 400 | Datos inválidos | Falta un campo, DNI mal formado, categoría o estado fuera de la lista |
 | 404 | No encontrado | El ticket o el agente no existen |
-| 409 | Conflicto | No hay agentes cargados para asignar |
+| 409 | Conflicto | No hay agentes cargados para asignar, el agente ya existe o el agente a dar de baja tiene tickets |
 
 ## 4. Resumen de endpoints
 
@@ -56,6 +58,9 @@ La API permite:
 | 6 | `GET` | `/reportes/frecuencia-categorias` | Agente | Cantidad de tickets por categoría |
 | 7 | `GET` | `/reportes/tiempo-promedio-resolucion` | Agente | Tiempo promedio de resolución |
 | 8 | `GET` | `/reportes/top-categorias` | Agente | Categorías con más tickets |
+| 9 | `DELETE` | `/tickets/{id}` | Agente | Elimina un ticket |
+| 10 | `POST` | `/agentes` | Agente | Da de alta un agente |
+| 11 | `DELETE` | `/agentes/{dni}` | Agente | Da de baja un agente sin tickets |
 
 ## 5. Objeto Ticket
 
@@ -217,6 +222,45 @@ Las N categorías con más tickets, de mayor a menor.
 |---|---|
 | 200 | Lista ordenada |
 | 400 | `{ "message": "Límite inválido" }` (fuera del rango 1 a 4) |
+
+### 9. `DELETE /tickets/{id}` — Eliminar ticket
+
+Elimina el ticket, sin importar su estado. Deja de aparecer en las consultas y en los reportes.
+
+| Código | Respuesta |
+|---|---|
+| 204 | Sin cuerpo |
+| 404 | `{ "message": "Ticket no encontrado" }` |
+
+### 10. `POST /agentes` — Dar de alta un agente
+
+A partir del alta, el agente nuevo puede recibir tickets en la asignación automática.
+
+| Campo | Tipo | Obligatorio | Descripción |
+|---|---|---|---|
+| `dni` | texto (7-8 dígitos) | Sí | DNI del agente |
+| `nombre` | texto | Sí | Nombre del agente |
+
+```json
+{ "dni": "40111222", "nombre": "Juan Pérez" }
+```
+
+| Código | Respuesta |
+|---|---|
+| 201 | El agente creado: `{ "dni": "40111222", "nombre": "Juan Pérez" }` |
+| 400 | `{ "message": "Complete todos los campos" }` o `{ "message": "DNI inválido" }` |
+| 409 | `{ "message": "El agente ya existe" }` |
+
+### 11. `DELETE /agentes/{dni}` — Dar de baja un agente
+
+Solo se puede dar de baja un agente que no tiene tickets asignados, en cualquier estado. Así ningún ticket queda sin responsable.
+
+| Código | Respuesta |
+|---|---|
+| 204 | Sin cuerpo |
+| 400 | `{ "message": "DNI inválido" }` |
+| 404 | `{ "message": "Agente no encontrado" }` |
+| 409 | `{ "message": "El agente tiene tickets asignados" }` |
 
 ## 7. Flujo típico de uso
 

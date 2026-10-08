@@ -20,9 +20,10 @@ Miembro del equipo de soporte que atiende y resuelve los tickets.
 
 | Objetivos | Características |
 |---|---|
-| Ver los tickets que tiene asignados | Está precargado en el sistema (DNI y nombre) |
+| Ver los tickets que tiene asignados | Está cargado en el sistema (DNI y nombre): precargado o dado de alta |
 | Informar el avance cambiando el estado | Se identifica con su DNI |
 | Consultar los reportes para mejorar el servicio | Accede por la interfaz web, sin login |
+| Mantener los datos: eliminar tickets y dar de alta o de baja agentes | No hay rol administrador: estas tareas también las hace el agente |
 
 ### Comportamiento automático (no es un actor)
 
@@ -237,11 +238,84 @@ Característica: Top de categorías
     Entonces el sistema informa "Conexión" con 5 y "Facturación" con 3
 ```
 
+### US-10: Dar de alta un agente
+
+> *Como **agente** quiero dar de alta a un agente nuevo para que empiece a recibir tickets.*
+
+| Criterio | Resultado esperado |
+|---|---|
+| CA-10.1 Completa DNI y nombre | Se crea el agente y puede recibir tickets |
+| CA-10.2 Falta algún campo | Mensaje: "Complete todos los campos" |
+| CA-10.3 DNI mal formado | Mensaje: "DNI inválido" |
+| CA-10.4 El DNI ya es de un agente | Mensaje: "El agente ya existe" |
+
+```gherkin
+Característica: Dar de alta un agente
+
+  Escenario: Se da de alta un agente nuevo
+    Cuando el agente da de alta al DNI "40111222" con el nombre "Juan Pérez"
+    Entonces el sistema crea el agente
+    Y el agente "40111222" puede recibir tickets nuevos
+
+  Escenario: El agente ya existe
+    Dado que el agente "25987654" está cargado
+    Cuando el agente da de alta al DNI "25987654" con el nombre "María Gómez"
+    Entonces el sistema muestra el mensaje "El agente ya existe"
+```
+
+### US-11: Dar de baja un agente
+
+> *Como **agente** quiero dar de baja a un agente que ya no trabaja en soporte para que no le lleguen tickets nuevos.*
+
+| Criterio | Resultado esperado |
+|---|---|
+| CA-11.1 El agente no tiene tickets | Se elimina el agente |
+| CA-11.2 El agente tiene tickets | Mensaje: "El agente tiene tickets asignados"; no se elimina |
+| CA-11.3 DNI que no es de un agente | Mensaje: "Agente no encontrado" |
+
+```gherkin
+Característica: Dar de baja un agente
+
+  Escenario: Se da de baja un agente sin tickets
+    Dado que el agente "40111222" no tiene tickets asignados
+    Cuando el agente da de baja al DNI "40111222"
+    Entonces el sistema elimina el agente
+    Y no se le asignan tickets nuevos
+
+  Escenario: El agente tiene tickets asignados
+    Dado que el agente "25987654" tiene tickets asignados
+    Cuando el agente da de baja al DNI "25987654"
+    Entonces el sistema muestra el mensaje "El agente tiene tickets asignados"
+    Y el agente sigue cargado
+```
+
+### US-12: Eliminar ticket
+
+> *Como **agente** quiero eliminar un ticket cargado por error para que no figure en las consultas ni en los reportes.*
+
+| Criterio | Resultado esperado |
+|---|---|
+| CA-12.1 El ticket existe | Se elimina y deja de contarse en los reportes |
+| CA-12.2 El número no es de un ticket | Mensaje: "Ticket no encontrado" |
+
+```gherkin
+Característica: Eliminar ticket
+
+  Escenario: Se elimina un ticket
+    Dado que existe el ticket 1
+    Cuando el agente elimina el ticket 1
+    Entonces el ticket 1 ya no aparece en las consultas
+
+  Escenario: El ticket no existe
+    Cuando el agente elimina el ticket 999
+    Entonces el sistema muestra el mensaje "Ticket no encontrado"
+```
+
 ## 3. Matriz actores vs. user stories
 
 | Actor | User stories |
 |---|---|
 | Cliente | US-01, US-02 (incluida en US-01), US-03, US-04 |
-| Agente de soporte | US-05, US-06, US-07, US-08, US-09 |
+| Agente de soporte | US-05, US-06, US-07, US-08, US-09, US-10, US-11, US-12 |
 
-**Resumen:** 9 user stories · 2 actores · 4 estados · identificación por DNI · sin login.
+**Resumen:** 12 user stories · 2 actores · 4 estados · identificación por DNI · sin login.

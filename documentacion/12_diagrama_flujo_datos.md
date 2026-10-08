@@ -53,12 +53,15 @@ digraph DiagramaContexto {
     A -> P0 [label="Actualización de estado"];
     A -> P0 [label="Solicitud de reporte"];
     P0 -> A [label="Reporte"];
+    A -> P0 [label="Alta o baja de agente"];
+    A -> P0 [label="Baja de ticket"];
+    P0 -> A [label="Resultado de la operación"];
 }
 ```
 
 ## 2. Diagrama 0 (nivel 1)
 
-Descompone el sistema en cuatro procesos y dos almacenamientos.
+Descompone el sistema en cinco procesos y dos almacenamientos.
 
 | Proceso | Qué hace |
 |---|---|
@@ -66,10 +69,11 @@ Descompone el sistema en cuatro procesos y dos almacenamientos.
 | **2 Consultar tickets** | Devuelve los tickets de un cliente o los asignados a un agente, según el DNI ingresado. |
 | **3 Actualizar estado** | Guarda el nuevo estado que informa el agente o el cliente; si es *Cerrado*, registra la fecha de finalización. |
 | **4 Generar reportes** | Calcula la frecuencia por categoría, el tiempo promedio de resolución y el top de categorías. |
+| **5 Administrar datos** | Da de alta y de baja agentes (solo si no tienen tickets) y elimina tickets. |
 
 | Almacenamiento | Contenido |
 |---|---|
-| **D1 Agentes** | DNI y nombre de los agentes (precargados). |
+| **D1 Agentes** | DNI y nombre de los agentes (precargados o dados de alta). |
 | **D2 Tickets** | Todos los tickets con su agente, estado y fechas. |
 
 ```dot
@@ -103,7 +107,8 @@ digraph Diagrama0 {
         P2 [label="2\nCONSULTAR TICKETS"];
         P3 [label="3\nACTUALIZAR ESTADO"];
         P4 [label="4\nGENERAR REPORTES"];
-        P1 -> P2 -> P3 -> P4 [style=invis];
+        P5 [label="5\nADMINISTRAR DATOS"];
+        P1 -> P2 -> P3 -> P4 -> P5 [style=invis];
     }
 
     // Almacenamientos
@@ -138,5 +143,13 @@ digraph Diagrama0 {
     A  -> P4 [label="Solicitud de reporte"];
     P4 -> A  [label="Reporte"];
     D2 -> P4 [label="Datos para reportes"];
+
+    // 5 Administrar datos
+    A  -> P5 [label="Alta o baja de agente"];
+    A  -> P5 [label="Baja de ticket"];
+    P5 -> A  [label="Resultado de la operación"];
+    D2 -> P5 [label="Tickets del agente"];
+    P5 -> D1 [label="Cambio de agentes"];
+    P5 -> D2 [label="Ticket eliminado"];
 }
 ```

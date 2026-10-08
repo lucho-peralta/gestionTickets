@@ -67,6 +67,24 @@ Valores de referencia usados en todo el documento:
 
 - Las N categorías con más tickets, de mayor a menor (por defecto N = 3; N puede ir de 1 a 4).
 
+#### RF-10: Dar de alta un agente
+
+- El agente ingresa el **DNI** y el **nombre** del agente nuevo. Los dos campos son obligatorios.
+- A partir del alta, el agente nuevo puede recibir tickets en la asignación automática (RF-02).
+- Si falta algún campo, el sistema informa "Complete todos los campos"; si el DNI no tiene 7 u 8 dígitos, "DNI inválido"; si ya hay un agente con ese DNI, "El agente ya existe".
+
+#### RF-11: Dar de baja un agente
+
+- El agente ingresa el DNI del agente a dar de baja.
+- Solo se puede dar de baja un agente que **no tiene tickets asignados**, para que ningún ticket quede sin responsable.
+- Si el DNI no corresponde a ningún agente, el sistema informa "Agente no encontrado"; si tiene tickets, "El agente tiene tickets asignados".
+
+#### RF-12: Eliminar ticket
+
+- El agente elimina un ticket por su número (por ejemplo, si se cargó por error).
+- El ticket eliminado deja de aparecer en las consultas y en los reportes.
+- Si el número no corresponde a ningún ticket, el sistema informa "Ticket no encontrado".
+
 ## Requerimientos No Funcionales (RNF)
 
 ### RNF-01: Acceso sin autenticación
@@ -85,7 +103,8 @@ Valores de referencia usados en todo el documento:
 - Campos obligatorios validados antes de guardar.
 - `categoria` y `estado` solo aceptan valores de sus listas.
 - El DNI se guarda como texto de 7 u 8 dígitos.
-- Todo ticket tiene un agente asignado (FK válida a `agente`).
+- Todo ticket tiene un agente asignado (FK válida a `agente`); por eso no se da de baja un agente que tiene tickets.
+- No puede haber dos agentes con el mismo DNI.
 - `fecha_finalizacion` solo se completa cuando el ticket pasa a **Cerrado**.
 
 ### RNF-04: Rendimiento

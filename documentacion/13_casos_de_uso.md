@@ -1,6 +1,6 @@
 # Casos de Uso
 
-El diagrama muestra las asociaciones entre los actores (Cliente y Agente de soporte) y los 9 casos de uso del sistema. *Asignar agente* no lo dispara una persona: el sistema lo ejecuta siempre dentro de *Crear ticket* (relación `<<include>>`). Cada caso de uso corresponde a la user story del mismo número en `05_actores_casos_de_uso.md`.
+El diagrama muestra las asociaciones entre los actores (Cliente y Agente de soporte) y los 12 casos de uso del sistema. *Asignar agente* no lo dispara una persona: el sistema lo ejecuta siempre dentro de *Crear ticket* (relación `<<include>>`). Cada caso de uso corresponde a la user story del mismo número en `05_actores_casos_de_uso.md`.
 
 ## Diagrama de casos de uso
 
@@ -35,6 +35,9 @@ digraph CasosDeUso {
         UC7 [label="CU-07\nVer frecuencia por categoría"];
         UC8 [label="CU-08\nVer tiempo promedio\nde resolución"];
         UC9 [label="CU-09\nVer top de categorías"];
+        UC10 [label="CU-10\nDar de alta un agente"];
+        UC11 [label="CU-11\nDar de baja un agente"];
+        UC12 [label="CU-12\nEliminar ticket"];
     }
 
     Cliente -> UC1;
@@ -46,6 +49,9 @@ digraph CasosDeUso {
     UC7 -> Agente;
     UC8 -> Agente;
     UC9 -> Agente;
+    UC10 -> Agente;
+    UC11 -> Agente;
+    UC12 -> Agente;
 
     UC1 -> UC2 [label="<<include>>", style=dashed, dir=forward, arrowhead=open];
 
@@ -55,6 +61,9 @@ digraph CasosDeUso {
     Cliente -> UC7 [style=invis];
     Cliente -> UC8 [style=invis];
     Cliente -> UC9 [style=invis];
+    Cliente -> UC10 [style=invis];
+    Cliente -> UC11 [style=invis];
+    Cliente -> UC12 [style=invis];
     UC2 -> Agente [style=invis];
 }
 ```
@@ -185,3 +194,49 @@ digraph CasosDeUso {
 * **Flujos alternativos:**
    * 2a. El agente indica otra cantidad N: el sistema muestra las N primeras.
 * **Postcondiciones:** Ninguna (solo consulta).
+
+## CU-10: Dar de alta un agente
+
+* **Actor:** Agente de soporte
+* **Descripción:** Se incorpora un agente nuevo al equipo de soporte.
+* **Precondiciones:** Ninguna.
+* **Disparador:** El agente entra a "Agentes" → "Nuevo agente".
+* **Flujo principal:**
+   1. El sistema muestra el formulario con DNI y nombre.
+   2. El agente completa los datos y confirma.
+   3. El sistema verifica que los dos campos estén completos y que el DNI tenga 7 u 8 dígitos.
+   4. El sistema verifica que no haya otro agente con ese DNI.
+   5. El sistema guarda el agente y lo muestra.
+* **Flujos alternativos:**
+   * 3a. Falta un campo: el sistema informa "Complete todos los campos".
+   * 3b. DNI mal formado: el sistema informa "DNI inválido".
+   * 4a. El DNI ya es de un agente: el sistema informa "El agente ya existe" y no guarda nada.
+* **Postcondiciones:** El agente queda cargado y puede recibir tickets en CU-02.
+
+## CU-11: Dar de baja un agente
+
+* **Actor:** Agente de soporte
+* **Descripción:** Se quita del sistema a un agente que ya no atiende tickets.
+* **Precondiciones:** El agente a dar de baja no tiene tickets asignados.
+* **Disparador:** En "Agentes", el agente ingresa el DNI a dar de baja y hace clic en "Dar de baja".
+* **Flujo principal:**
+   1. El sistema verifica que el DNI corresponda a un agente.
+   2. El sistema verifica que el agente no tenga tickets asignados.
+   3. El sistema elimina el agente.
+* **Flujos alternativos:**
+   * 1a. El DNI no es de un agente: el sistema informa "Agente no encontrado".
+   * 2a. El agente tiene tickets: el sistema informa "El agente tiene tickets asignados" y no lo elimina.
+* **Postcondiciones:** El agente ya no figura en el sistema y no recibe tickets nuevos.
+
+## CU-12: Eliminar ticket
+
+* **Actor:** Agente de soporte
+* **Descripción:** Se elimina un ticket, por ejemplo, porque se cargó por error.
+* **Precondiciones:** El ticket existe.
+* **Disparador:** El agente hace clic en "Eliminar" en un ticket y confirma.
+* **Flujo principal:**
+   1. El sistema verifica que el ticket exista.
+   2. El sistema elimina el ticket.
+* **Flujos alternativos:**
+   * 1a. El ticket no existe: el sistema informa "Ticket no encontrado".
+* **Postcondiciones:** El ticket deja de aparecer en las consultas y en los reportes.

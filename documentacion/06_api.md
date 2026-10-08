@@ -7,7 +7,7 @@ Este documento corresponde a la Semana 1 ("Documentar API básica"): lista **qu�
 - Sin login ni autenticación: ningún endpoint pide usuario o contraseña. La identificación es por DNI.
 - Formato JSON.
 - El cliente no se registra: su DNI viaja dentro del ticket.
-- Los agentes están precargados: la API no los crea ni los modifica.
+- La base arranca con agentes precargados. La API permite dar de alta agentes nuevos y dar de baja los que no tienen tickets; no los modifica.
 
 ## Endpoints
 
@@ -21,6 +21,9 @@ Este documento corresponde a la Semana 1 ("Documentar API básica"): lista **qu�
 | 6 | Agente | `GET` | `/reportes/frecuencia-categorias` | Cantidad de tickets por categoría. |
 | 7 | Agente | `GET` | `/reportes/tiempo-promedio-resolucion` | Tiempo promedio de resolución de los tickets cerrados. |
 | 8 | Agente | `GET` | `/reportes/top-categorias` | Categorías con más tickets (por defecto, las 3 primeras). |
+| 9 | Agente | `DELETE` | `/tickets/{id}` | Elimina un ticket. |
+| 10 | Agente | `POST` | `/agentes` | Da de alta un agente (DNI y nombre). |
+| 11 | Agente | `DELETE` | `/agentes/{dni}` | Da de baja un agente, si no tiene tickets asignados. |
 
 > **Asignar agente** es una acción del sistema que ocurre **dentro** del endpoint 1; no tiene un endpoint propio.
 
@@ -37,3 +40,6 @@ Este documento corresponde a la Semana 1 ("Documentar API básica"): lista **qu�
 | RF-07 Frecuencia por categoría | 6 |
 | RF-08 Tiempo promedio de resolución | 7 |
 | RF-09 Top de categorías | 8 |
+| RF-10 Dar de alta un agente | 10 |
+| RF-11 Dar de baja un agente | 11 |
+| RF-12 Eliminar ticket | 9 |

@@ -70,7 +70,7 @@ Para cortar Prism: `Ctrl+C` en la terminal 1.
 
 ## Ejecución contra el back-end real
 
-Con el back-end en `http://localhost:3000` y los agentes precargados, dentro de `hurl/`:
+Con el back-end en `http://localhost:3000` y al menos un agente cargado (la base arranca con 3), dentro de `hurl/`:
 
 ```bash
 hurl --jobs 1 --test --variables-file env.dev --glob "*.hurl"
@@ -89,7 +89,12 @@ Acá no hacen falta ni Redocly ni Prism.
 006 - Crear   | Frecuencia                      > 4 categorías
 007 - Crear   | Cerrar          | Promedio*2    > tickets_cerrados >= 1
 008 - Crear   | Top             | Top limite=2  > [3], [2]
+009 - Crear   | Eliminar        | Obtener       > 204, 404
+010 - Baja*   | Alta agente     | Alta repetida | Baja > 201, 409, 204
+011 - Baja*   | Alta | Baja*2   | Crear | Baja con tickets > 204, 404, 409
 ```
+
+`Baja*` al principio de 010 y 011: da de baja el agente de prueba `40111222` por si quedó de una corrida anterior. Acepta cualquier código (`HTTP *`), porque lo normal es que no exista y dé 404.
 
 ## Problemas comunes
 
@@ -104,5 +109,6 @@ Acá no hacen falta ni Redocly ni Prism.
 
 - `header "sl-violations" not exists`: Prism agrega ese header cuando el pedido o la respuesta no cumplen el OpenAPI. Contra el back-end real el header no existe, así que el chequeo pasa.
 - `Prefer: example=...`: le indica a Prism cuál de los ejemplos del OpenAPI devolver (si no, devuelve siempre el primero). El back-end real lo ignora.
+- `Prefer: code=...`: le indica a Prism qué código de respuesta devolver (por ejemplo `404` o `409`), para probar los errores. El back-end real también lo ignora.
 - Cada archivo crea sus propios datos, así que no depende de los demás.
 - `bundle.yaml` es un archivo generado: no hace falta subirlo al repo.

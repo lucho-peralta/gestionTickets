@@ -1,6 +1,6 @@
 # Diagramas de Secuencia
 
-Herramienta: **Mermaid** (`sequenceDiagram`). Muestran, en orden temporal, los mensajes que intercambian los actores, la API y la base de datos en los cuatro flujos principales del sistema. Los endpoints corresponden a `19_rest_api.md`.
+Herramienta: **Mermaid** (`sequenceDiagram`). Muestran, en orden temporal, los mensajes que intercambian los actores, la API y la base de datos en los flujos principales del sistema. Los endpoints corresponden a `19_rest_api.md`.
 
 ## 1. Crear ticket (con asignación automática)
 
@@ -89,4 +89,59 @@ sequenceDiagram
     API->>BD: AVG(fecha_finalizacion - fecha_inicio) de tickets cerrados
     BD-->>API: Promedio y cantidad de tickets
     API-->>Agente: 200 { promedio_horas, tickets_cerrados }
+```
+
+## 5. Alta y baja de un agente
+
+```mermaid
+sequenceDiagram
+    actor Agente
+    participant API as Sistema (API)
+    participant BD as Base de Datos
+
+    Agente->>API: POST /agentes (dni, nombre)
+    API->>API: Valida campos obligatorios y DNI
+    alt Faltan datos o DNI inválido
+        API-->>Agente: 400 "Datos inválidos"
+    else Datos correctos
+        API->>BD: Busca el agente por DNI
+        alt El agente ya existe
+            API-->>Agente: 409 "El agente ya existe"
+        else No existe
+            API->>BD: INSERT agente
+            API-->>Agente: 201 Agente creado
+        end
+    end
+
+    Note over Agente,API: Más adelante, la baja
+    Agente->>API: DELETE /agentes/{dni}
+    API->>BD: Busca el agente por DNI
+    alt El agente no existe
+        API-->>Agente: 404 "Agente no encontrado"
+    else El agente existe
+        API->>BD: Cuenta tickets con dni_agente = DNI
+        alt Tiene tickets
+            API-->>Agente: 409 "El agente tiene tickets asignados"
+        else No tiene tickets
+            API->>BD: DELETE agente
+            API-->>Agente: 204 Sin contenido
+        end
+    end
+```
+
+## 6. Eliminar un ticket
+
+```mermaid
+sequenceDiagram
+    actor Agente
+    participant API as Sistema (API)
+    participant BD as Base de Datos
+
+    Agente->>API: DELETE /tickets/{id}
+    API->>BD: DELETE ticket WHERE id = {id}
+    alt No se borró ninguna fila
+        API-->>Agente: 404 "Ticket no encontrado"
+    else Se borró el ticket
+        API-->>Agente: 204 Sin contenido
+    end
 ```

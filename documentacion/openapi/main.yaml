@@ -13,9 +13,11 @@ info:
       (se registra fecha_finalizacion) o lo devuelve a "en_proceso".
     - Reportes: frecuencia por categoría, tiempo promedio de resolución
       y top de categorías.
+    - El agente puede eliminar tickets y dar de alta o de baja agentes
+      (la baja solo si el agente no tiene tickets).
 
-    Supuestos: sin login (identificación por DNI), agentes precargados,
-    sin tabla de clientes, validaciones mínimas.
+    Supuestos: sin login (identificación por DNI), la base arranca con
+    agentes precargados, sin tabla de clientes, validaciones mínimas.
   license:
     name: MIT
     url: https://opensource.org/license/MIT
@@ -29,11 +31,11 @@ security: []
 
 tags:
   - name: tickets
-    description: Alta, consulta y cambio de estado de tickets.
+    description: Alta, consulta, cambio de estado y eliminación de tickets.
   - name: clientes
     description: Consulta de tickets por DNI del cliente.
   - name: agentes
-    description: Consulta de tickets asignados a un agente (agentes precargados).
+    description: Alta y baja de agentes, y consulta de los tickets asignados a un agente.
   - name: reportes
     description: Métricas calculadas a partir de los tickets.
 
@@ -42,6 +44,8 @@ paths:
   /tickets/{id}:                         { $ref: "partials/tickets.yaml#/paths/~1tickets~1{id}" }
   /tickets/{id}/estado:                  { $ref: "partials/tickets.yaml#/paths/~1tickets~1{id}~1estado" }
   /clientes/{dni}/tickets:               { $ref: "partials/clientes.yaml#/paths/~1clientes~1{dni}~1tickets" }
+  /agentes:                              { $ref: "partials/agentes.yaml#/paths/~1agentes" }
+  /agentes/{dni}:                        { $ref: "partials/agentes.yaml#/paths/~1agentes~1{dni}" }
   /agentes/{dni}/tickets:                { $ref: "partials/agentes.yaml#/paths/~1agentes~1{dni}~1tickets" }
   /reportes/frecuencia-categorias:       { $ref: "partials/reportes.yaml#/paths/~1reportes~1frecuencia-categorias" }
   /reportes/tiempo-promedio-resolucion:  { $ref: "partials/reportes.yaml#/paths/~1reportes~1tiempo-promedio-resolucion" }

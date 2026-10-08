@@ -9,6 +9,9 @@ import { tiempoPromedioResolucion } from './features/tiempoPromedioResolucion.js
 import { ticketsCliente } from './features/ticketsCliente.js';
 import { ticketsAgente } from './features/ticketsAgente.js';
 import { frecuenciaCategorias } from './features/frecuenciaCategorias.js';
+import { eliminarTicket } from './features/eliminarTicket.js';
+import { crearAgente } from './features/crearAgente.js';
+import { eliminarAgente } from './features/eliminarAgente.js';
 
 export const app = express();
 
@@ -19,11 +22,14 @@ app.use(express.json());
 app.post('/tickets', crearTicket);
 app.get('/tickets/:id', obtenerTicket);
 app.patch('/tickets/:id/estado', actualizarEstado);
+app.delete('/tickets/:id', eliminarTicket);
 
 // rutas clientes
 app.get('/clientes/:dni/tickets', ticketsCliente);
 
 // rutas agentes
+app.post('/agentes', crearAgente);
+app.delete('/agentes/:dni', eliminarAgente);
 app.get('/agentes/:dni/tickets', ticketsAgente);
 
 // Rutas de reportes

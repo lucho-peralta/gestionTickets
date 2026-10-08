@@ -3,13 +3,15 @@ import { db } from '../configuracion/db.js';
 export function topCategorias(req, res) {
   try {
     const limiteStr = req.query.limite;
-    let limite = 3; 
+    let limite = 3;
 
-    if (limiteStr) {
+    if (limiteStr !== undefined) {
       const limiteParseado = Number(limiteStr);
-      if (!Number.isNaN(limiteParseado) && limiteParseado > 0) {
-        limite = limiteParseado;
+      if (!Number.isInteger(limiteParseado) || limiteParseado < 1 || limiteParseado > 4) {
+        res.status(400).json({ message: 'Límite inválido' });
+        return;
       }
+      limite = limiteParseado;
     }
 
     const filas = db
