@@ -85,6 +85,31 @@ npm start
 
 Tiene que aparecer `Servidor escuchando en http://localhost:3000`. Para apagarlo: `Ctrl + C`.
 
+## Docker
+
+También se puede levantar en un contenedor, sin instalar Node en la máquina. Hace falta tener [Docker](https://docs.docker.com/engine/install/) instalado.
+
+Desde la carpeta `backend/`:
+
+```bash
+docker build -t tickets-backend .
+docker run -d --name tickets-backend -p 3000:3000 -v tickets-datos:/app/data tickets-backend
+```
+
+- `-p 3000:3000`: deja la API en `http://localhost:3000`, así que los tests de Hurl funcionan sin cambios.
+- `-v tickets-datos:/app/data`: guarda la base SQLite en un volumen de Docker, así no se pierde al borrar el contenedor.
+
+Comandos útiles:
+
+| Para | Comando |
+|---|---|
+| Ver si está corriendo | `docker ps` |
+| Ver los logs | `docker logs tickets-backend` |
+| Apagarlo | `docker stop tickets-backend` |
+| Volver a prenderlo | `docker start tickets-backend` |
+| Actualizarlo después de cambiar el código | `docker rm -f tickets-backend`, y repetir `build` y `run` |
+| Empezar con la base limpia | `docker rm -f tickets-backend` y `docker volume rm tickets-datos`, y repetir `run` |
+
 ## Por qué `--ignore-scripts`
 
 Con un `npm install` común, npm intenta **compilar** `better-sqlite3` con `node-gyp`, y eso falla si la máquina no tiene Python y un compilador de C++. No hace falta compilar: el paquete ya trae los binarios listos para Windows y Linux, así que `--ignore-scripts` evita ese paso.
